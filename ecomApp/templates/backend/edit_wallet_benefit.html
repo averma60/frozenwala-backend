@@ -1,0 +1,165 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+{% load static %}
+
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit Wallet Benefit</h3>
+                        </div>
+
+                        <div class="card-body">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert 
+                                        {% if message.tags == 'success' %}alert-success
+                                        {% elif message.tags == 'error' %}alert-danger
+                                        {% elif message.tags == 'warning' %}alert-warning
+                                        {% else %}alert-info{% endif %}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <!-- Add Amount -->
+                                    <div class="col-lg-6">
+                                        <label>Add Amount (₹)</label>
+                                        <input type="number" name="add_amount"
+                                               class="form-control"
+                                               value="{{ wallet_benefit.add_amount }}"
+                                               required>
+                                    </div>
+
+                                    <!-- Benefit Amount -->
+                                    <div class="col-lg-6">
+                                        <label>Benefit Amount (₹)</label>
+                                        <input type="number" name="benefit_amount"
+                                               class="form-control"
+                                               value="{{ wallet_benefit.benefit_amount }}"
+                                               required>
+                                    </div>
+
+                                    <!-- Influencer -->
+                                    <div class="col-lg-6 mt-3">
+                                        <label>Influencer</label>
+                                        <select name="influencer" id="influencer" class="form-control">
+                                            <option value="0"
+                                                {% if not wallet_benefit.influencer %}selected{% endif %}>
+                                                No
+                                            </option>
+                                            <option value="1"
+                                                {% if wallet_benefit.influencer %}selected{% endif %}>
+                                                Yes
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Influencer Time Period -->
+                                    <div class="col-lg-6 mt-3" id="timePeriodBox">
+                                        <label>Influencer Validity (Days)</label>
+                                        <input type="number"
+                                               name="influencer_time_period"
+                                               class="form-control"
+                                               value="{% if wallet_benefit.influencer_time_period %}{{ wallet_benefit.influencer_time_period.days }}{% endif %}">
+                                    </div>
+
+                                    <div class="col-lg-6 mt-3" id="percentageBox">
+                                        <label>Influencer Benefit Percentage (%)</label>
+                                        <input type="number"
+                                            name="influencer_benefit_percentage"
+                                            class="form-control"
+                                            min="0"
+                                            max="100"
+                                            step="0.01"
+                                            value="{{ wallet_benefit.influencer_benefit_percentage }}">
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="col-lg-6 mt-3">
+                                        <label>Status</label>
+                                        <select name="is_active" class="form-control">
+                                            <option value="1"
+                                                {% if wallet_benefit.is_active %}selected{% endif %}>
+                                                Active
+                                            </option>
+                                            <option value="0"
+                                                {% if not wallet_benefit.is_active %}selected{% endif %}>
+                                                Inactive
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="col-lg-12 mt-3">
+                                        <label>Description</label>
+                                        <textarea name="description"
+                                                  id="id_description"
+                                                  class="form-control">
+                                            {{ wallet_benefit.description|safe }}
+                                        </textarea>
+                                    </div>
+
+                                    <!-- Buttons -->
+                                    <div class="col-lg-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            Update Wallet Benefit
+                                        </button>
+                                        <a href="{% url 'wallet_benefits' %}" class="btn btn-danger">
+                                            Back
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    CKEDITOR.replace('id_description');
+
+    const influencerSelect = document.getElementById('influencer');
+    const timeBox = document.getElementById('timePeriodBox');
+    const percentageBox = document.getElementById('percentageBox');
+
+    const timeInput = document.querySelector(
+        'input[name="influencer_time_period"]'
+    );
+    const percentageInput = document.querySelector(
+        'input[name="influencer_benefit_percentage"]'
+    );
+
+    function togglePeriod() {
+        if (influencerSelect.value === '1') {
+            timeBox.style.display = 'block';
+            percentageBox.style.display = 'block';
+
+            timeInput.required = true;
+            percentageInput.required = true;
+        } else {
+            timeBox.style.display = 'none';
+            percentageBox.style.display = 'none';
+
+            timeInput.required = false;
+            percentageInput.required = false;
+
+            timeInput.value = '';
+            percentageInput.value = '';
+        }
+    }
+
+    influencerSelect.addEventListener('change', togglePeriod);
+    togglePeriod(); // run on page load
+</script>

@@ -1,0 +1,85 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+
+{% load static %}
+<style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                {% if message %}
+                <ul class="messages">
+                    <p class="alert-danger">{{ message }}</p>
+                </ul>
+                {% endif %}
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit Address</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" enctype="multipart/form-data" action="{% url 'update_address' item.id %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="newname">Name:</label>
+                                        <input type="text" id="newname" value="{{ item.newname }}" name="newname" maxlength="255" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="phone">Phone:</label>
+                                        <input type="text" id="phone" value="{{ item.phone }}" name="phone" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="address">Address:</label>
+                                        <input type="text" id="address" value="{{ item.address }}" name="address" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="city">City:</label>
+                                        <input type="text" id="city" value="{{ item.city }}" name="city" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="state">State:</label>
+                                        <input type="text" id="state" value="{{ item.state }}" name="state" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="country">Country:</label>
+                                        <input type="text" id="country" value="{{ item.country }}" name="country" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="zip_code">Zip Code:</label>
+                                        <input type="text" id="zip_code" value="{{ item.zip_code }}" name="zip_code" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">Update Address</button>
+                                    <a href="{% url 'back/address_list' %}" class="btn btn-danger">Back</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+
+<!-- Main conten -->
+{% include 'backend/footer.html' %}

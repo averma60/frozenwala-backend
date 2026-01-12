@@ -1,0 +1,188 @@
+
+{% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active"><?= $page_title;?></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+<section class="vh-100" >
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-xl-9">
+
+
+<form method="POST" enctype="multipart/form-data" >
+{% csrf_token %}
+        <div class="card" style="border-radius: 15px;">
+        <div class="card" style="border-radius: 15px;">
+          <div class="card-body">
+<div class="row align-items-center pt-4 pb-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Catagory Name</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+
+<select id="cat_name" class="form-control  form-control-lg row align-items-center col-12 " name="cat_name">
+     <option value="" class="form-control  form-control-lg" disabled selected>--Choose an option--</option>
+    {% for category in categories %}
+        <option value="{{ category.name }}">{{ category.name }}</option>
+    {% endfor %}
+</select><br>
+
+
+              </div>
+            </div>
+            <div class="row align-items-center pt-4 pb-3">
+
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Product Name</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                <input type="text" name="name" class="form-control form-control-lg" />
+
+              </div>
+
+            </div>
+  <div class="row align-items-center pt-4 pb-3">
+
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Product Opening Stock</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                <input type="text" name="openingstock" class="form-control form-control-lg" />
+
+              </div>
+
+            </div>
+
+
+              <div class="row align-items-center pt-4 pb-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">BarCode</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+               <form class="form-inline" >
+
+  <div class="form-group col-lg-6">
+
+    <input type="text" class="form-control" id="coupon" name="coupon" placeholder="Barcode Id Will Be Generated">
+  </div>
+  <a type="submit" href="javascript:void(0)" id="generate_code" class="btn btn-primary col-lg-4">Confirm identity</a>
+</form>
+
+              </div>
+
+            </div>
+
+
+
+
+
+
+              <div class="row align-items-center pt-4 pb-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Product Description</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                  <textarea name="description" class="form-control form-control-lg" ></textarea>
+
+              </div>
+            </div>
+<div class="row align-items-center pt-4 pb-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Product Price</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                <input  name="price" class="form-control form-control-lg" />
+
+              </div>
+            </div>
+
+
+
+
+            <hr class="mx-n3">
+
+            <div class="row align-items-center py-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Product Image</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                <input class="form-control  form-control-lg" id="formFileLg" type="file" name="image" />
+                <div class="small text-muted mt-2">Upload your  Image</div>
+
+              </div>
+            </div>
+
+            <hr class="mx-n3">
+
+            <div class="px-5 py-4 row-4">
+              <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+              <a href="{%  url 'productapp' %}" class="btn btn-danger btn-lg">Back</a>
+            </div>
+
+          </div>
+        </div>
+     </form>
+      </div>
+    </div>
+
+
+</section>
+
+    <!-- Main content -->
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      <!-- /.content -->
+  </div>
+
+{% include 'backend/footer.html' %}
+<script>
+$(document).ready(function() {
+    $('#generate_code').click(function() {
+        var generate_coupon = Math.floor(Math.random() * 900000000000) + 1000000000000;
+        $('#coupon').val(generate_coupon);
+    });
+});
+</script>
+  <!-- /.navbar -->

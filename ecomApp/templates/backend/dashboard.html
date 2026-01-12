@@ -1,0 +1,612 @@
+
+   {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+<section class="content">
+      <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-rupee-sign"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Sales Amount</span>
+                <span class="info-box-number">
+                  {{total_order_prices}}
+                  <small>INR.</small>
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-cube"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Number Of Product</span>
+                <span class="info-box-number">{{total_items}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total Order</span>
+                <span class="info-box-number">{{total_unique_payment_ids}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Total User</span>
+                <span class="info-box-number">{{total_custom_users}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+<div class="card">
+              <div class="card-header border-transparent">
+                <h3 class="card-title">Latest Orders</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table m-0">
+                    <thead>
+                    <tr>
+                        <th>Sl No</th>
+                      <th>View</th>
+                        <TH>Customer Name</TH>
+                        <TH>Phone Number</TH>
+
+
+                        <th>Pick Up</th>
+
+                      <th>Price</th>
+                      <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in ordform %}
+
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+
+
+  <td>
+                            <a href="{% url 'orderapp/view_item' i.order_id %}" class="view" title="View" data-toggle="tooltip"><i class="fa fa-eye"></i></a>
+
+                        </td>
+                          </td>
+                        {% if i.newname %}
+                        <td>{{i.newname}}</td>
+                        {% else %}
+                        <td>Frozenwala Customer</td>
+                        {% endif %}
+
+                        {% if i.phone %}
+
+                        <td>{{i.phone}}</td>
+                        {% else %}
+                        <td>{{i.user_id.phone_number}}</td>
+                        {% endif %}
+
+                        {% if i.pick_up == "0" %}
+                        <td>No</td>
+                        {% else %}
+                        <td>Yes</td>
+                        {% endif %}
+<!--                                              <td>{{i.order_id}}</td>-->
+
+<!--                        <td>{{i.product_id.category}}</td>-->
+<!--                        <td>{{i.product_id.title}}</td>-->
+<!--                        <td>{{i.quantity}}{{i.product_id.item_measurement}}</td>-->
+
+                        <td>{{i.total_price}}</td>
+
+
+                      <td>
+    {% if i.status == "1" %}
+        <a href="" id="activeLink" class="btn btn-primary text-white">Pending</a>
+    {% elif i.status == "2" %}
+        <a href="" id="activeLink" class="btn btn-info text-white">Confirm</a>
+    {% elif i.status == "3" %}
+        <a href="" id="activeLink" class="btn btn-secondary text-white">Picked Up</a>
+    {% elif i.status == "4" %}
+        <a href="" id="activeLink" class="btn btn-success text-white">Delivered</a>
+    {% elif i.status == "5" %}
+        <a href="" id="activeLink" class="btn btn-danger text-white">Cancel</a>
+    {% elif i.status == "6" %}
+        <a href="" id="activeLink" class="btn btn-success text-white">Return Request</a>
+    {% else %}
+        <a href="" id="blockLink" class="btn btn-warning text-white">Return Accepted</a>
+    {% endif %}
+</td>
+
+
+
+                    </tr>
+                {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.table-responsive -->
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <a href="{%  url 'orderapp' %}" class="btn btn-sm btn-secondary float-right">View All Orders</a>
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+          </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">Monthly Recap Report</h5>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <div class="btn-group">
+
+                    <div class="dropdown-menu dropdown-menu-right" role="menu">
+                      <a href="#" class="dropdown-item">Action</a>
+                      <a href="#" class="dropdown-item">Another action</a>
+                      <a href="#" class="dropdown-item">Something else here</a>
+                      <a class="dropdown-divider"></a>
+                      <a href="#" class="dropdown-item">Separated link</a>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p class="text-center">
+                      <strong>Sales: {{from_date}} - {{to_date}}</strong>
+                    </p>
+
+                    <div class="">
+                      <!-- Sales Chart Canvas -->
+                      <canvas id="saleChart" height="400" style="height: 400px;"></canvas>
+                    </div>
+                    <!-- /.chart-responsive -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-md-4">
+
+
+
+                    <!-- /.progress-group -->
+
+
+
+                    <!-- /.progress-group -->
+
+                    <!-- /.progress-group -->
+                    <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Recently Added Products</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <ul class="products-list product-list-in-card pl-2 pr-2">
+
+                  <!-- /.item -->
+
+                  <!-- /.item -->
+                   {% for item in items %}
+  <li class="item">
+    <div class="product-img">
+{% if item.item_photo %}
+                <img src="{{ item.item_photo.url }}" alt="Item Image" width="100" height="70">
+                {% else %}
+                <img src="/static-back/assets/images/Frozenwala logo.png" alt="Item Image" width="100" height="70">
+                {% endif %}    </div>
+    <div class="product-info">
+      <p href="{% url 'view_item' item.id %}" style=""class="product-title" >{{ item.title }}
+        <span class="badge badge-warning float-right">₹{{ item.item_new_price }}</span>
+      </p>
+      <span class="product-description">{{ item.description }}</span>
+    </div>
+  </li>
+  {% endfor %}
+                  <!-- /.item -->
+                </ul>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer text-center">
+                <a href="{%  url 'item_list' %}" class="uppercase">View All Products</a>
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+
+              <!-- /.col -->
+            </div>
+                    <!-- /.progress-group -->
+                  </div>
+                  <!-- /.col -->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- ./card-body -->
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-4">
+                    <div class="description-block border-right">
+                      <h5 class="description-header"> {{total_order_prices}}
+                  <small>Rs.</small></h5>
+                      <span class="description-text">TOTAL REVENUE</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class=" col-4">
+                    <div class="description-block border-right">
+                      <h5 class="description-header">{{total_making}}<small>Rs.</small></h5>
+                      <span class="description-text">TOTAL COST</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class=" col-4">
+                    <div class="description-block border-right">
+                      <h5 class="description-header">{{ total_profit_amount }}<small>Rs.</small></h5>
+                      <span class="description-text">TOTAL PROFIT</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-sm-3 col-6">
+
+                    <!-- /.description-block -->
+                  </div>
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <div class="col-md-6">
+            <!-- MAP & BOX PANE -->
+
+            <!-- /.row -->
+
+            <!-- TABLE: LATEST ORDERS -->
+
+          <!-- /.col -->
+
+          <div class="col-md-4">
+            <!-- Info Boxes Style 2 -->
+
+            <!-- /.info-box -->
+
+            <!-- /.info-box -->
+
+            <!-- /.info-box -->
+
+            <!-- /.info-box -->
+
+
+            <!-- /.card -->
+
+            <!-- PRODUCT LIST -->
+
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!--/. container-fluid -->
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Main content -->
+
+
+
+   <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+
+
+
+            <!-- AREA CHART -->
+
+
+
+
+
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- DONUT CHART -->
+
+            <!-- /.card -->
+
+            <!-- PIE CHART -->
+<!--            <div class="card card-danger">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title">Pie Chart</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+            <!-- /.card -->
+
+          </div>
+          <!-- /.col (LEFT) -->
+          <div class="col-md-6">
+            <!-- LINE CHART -->
+<!--            <div class="card card-info">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title">Line Chart</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <div class="chart">-->
+<!--                  <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+<!--            &lt;!&ndash; /.card &ndash;&gt;-->
+
+<!--            &lt;!&ndash; BAR CHART &ndash;&gt;-->
+<!--            <div class="card card-success">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title">Bar Chart</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <div class="chart">-->
+<!--                  <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+<!--            &lt;!&ndash; /.card &ndash;&gt;-->
+
+<!--            &lt;!&ndash; STACKED BAR CHART &ndash;&gt;-->
+<!--            <div class="card card-success">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title">Stacked Bar Chart</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <div class="chart">-->
+<!--                  <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>-->
+<!--                </div>-->
+<!--              </div>-->
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+          </div>
+          <!-- /.col (RIGHT) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- /.content -->
+  </div>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('saleChart').getContext('2d');
+
+    // Extracting dates and orders from Django template variable
+    var dates = [];
+    var orders = [];
+    {% for entry in day_wise_report %}
+        dates.push("{{ entry.created_at }}");
+        orders.push({{ entry.total }}); // Corrected variable name from entry.total to entry.total_amount
+    {% endfor %}
+
+    // Create the chart with the extracted data
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates, // Dates as labels
+            datasets: [{
+                label: 'Total Orders',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Light blue background color
+                borderColor: 'white', // Dark blue border color
+                borderWidth: 1,
+                data: orders, // Total orders data
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'white' // Set Y axis label color to white
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'white' // Set X axis label color to white
+                    },
+                    gridLines: {
+color: 'rgba(255, 255, 255, 0.1)' // Set grid line color to white with opacity
+                    }
+                }]
+            },
+            legend: {
+                labels: {
+                    fontColor: 'white' // Set legend label color to white
+                }
+            },
+            maintainAspectRatio: false, // Prevent the chart from being constrained to the aspect ratio
+            responsive: true, // Allow the chart to be responsive
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            }
+        }
+    });
+</script>
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

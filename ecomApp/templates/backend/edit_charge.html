@@ -1,0 +1,64 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+   <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Delivery Charge</h3>
+                    </div>
+                    <div class="card-body">
+                    {% if sel_proform %}
+                        <form method="POST" enctype="multipart/form-data" action="{%url 'update_charge' sel_proform.id%}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="title">Delivery Charge:</label>
+                                    <input type="number" min="1" id="title" value="{{sel_proform.charge}}" name="charge" required class="form-control">
+                                </div>
+                                <div class="mt-4 col-lg-6">
+                                <button type="submit" class="btn btn-primary">Edit</button>
+                                <a href="{% url 'chargeapp' %}" class="btn btn-danger">Back</a>
+                            </div>
+                            </div>
+
+
+
+
+
+                        </form>
+{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- /.content -->
+  </div>
+
+
+    <!-- Main conten
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

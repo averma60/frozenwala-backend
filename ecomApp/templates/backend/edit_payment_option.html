@@ -1,0 +1,104 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+   <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Payment Option</h3>
+                    </div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert 
+                                {% if message.tags == 'success' %}alert-success
+                                {% elif message.tags == 'error' %}alert-danger
+                                {% elif message.tags == 'warning' %}alert-warning
+                                {% else %}alert-info{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        {% if payment_option %}
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <!-- Payment Type -->
+                                    <div class="col-lg-6">
+                                        <label>Payment Type</label>
+                                        <select name="code" class="form-control" required>
+                                            <option value="cod"
+                                                {% if payment_option.code == "cod" %}selected{% endif %}>
+                                                Cash On Delivery
+                                            </option>
+                                            <option value="online"
+                                                {% if payment_option.code == "online" %}selected{% endif %}>
+                                                Online Payment
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="col-lg-6">
+                                        <label>Status</label>
+                                        <select name="is_active" class="form-control">
+                                            <option value="1"
+                                                {% if payment_option.is_active %}selected{% endif %}>
+                                                Active
+                                            </option>
+                                            <option value="0"
+                                                {% if not payment_option.is_active %}selected{% endif %}>
+                                                Inactive
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="col-lg-12 mt-3">
+                                        <label>Description</label>
+                                        <textarea name="description" class="form-control" rows="3">{{ payment_option.description }}</textarea>
+                                    </div>
+
+                                    <!-- Buttons -->
+                                    <div class="col-lg-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <a href="{% url 'payment_options' %}" class="btn btn-danger">Back</a>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- /.content -->
+  </div>
+
+
+    <!-- Main conten
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

@@ -1,0 +1,195 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+    
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; 
+    }
+
+    
+    input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+    }
+
+    input[type="number"] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+    }
+
+</style>
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Create a Customer Coupon</h1>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <p {% if message.tags %} class="success-message"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </ul>
+{% endif %}
+<!--    <p class="success-message" >Status saved successfully!</p>-->
+
+          </div>
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Create a Customer Coupon</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+
+                <!-- Input addon -->
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Create a Customer Coupon</h3>
+                    </div>
+                    <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-lg-4 mt-3">
+            <label for="customerName">Coupon Code: *</label>
+            <input type="text" id="customerName" name="customerName" value="{{ form_data.customerName }}" required class="form-control" autocomplete="off">
+        </div>
+
+        <!-- <div class="col-lg-6">
+            <label>Occasion Name:</label>
+                    <input type="text" name="occasionName" class="form-control">
+        </div> -->
+
+        <div class="col-lg-4 mt-3">
+            <label for="expireDate">Start Date: *</label>
+            <input type="date" id="startDate" name="startDate" value="{{ form_data.startDate }}" required class="form-control" autocomplete="off">
+        </div>
+        <div class="col-lg-4 mt-3">
+            <label for="expireDate">Expire Date: *</label>
+            <input type="date" id="expireDate" name="expireDate" value="{{ form_data.expireDate }}" required class="form-control" autocomplete="off">
+        </div>
+        <div class="col-lg-4 mt-3">
+            <label for="couponType">Coupon Type: *</label>
+            <select name="couponType" id="couponType" required class="form-control">
+                <option value="Percentage" {% if form_data.couponType == "Percentage" %}selected{% endif %}>Percentage</option>
+                <option value="Flat" {% if form_data.couponType == "Flat" %}selected{% endif %}>Flat</option>
+            </select>
+        </div>
+
+        {% if form_data.couponType == "Percentage" %}
+            <div class="col-lg-4 mt-3" id="couponPercentage">
+                <label for="couponValue">Coupon Value(Percentage): *</label>
+                <input type="number" id="couponValue" name="couponPercent" value="{{ form_data.couponPercent }}"  class="form-control" autocomplete="off">
+            </div>
+            
+            <div class="col-lg-4 mt-3" id="couponFlat" style="display:none;">
+                <label for="couponValue">Coupon Value(Flat): *</label>
+                <input type="number" id="couponValue" name="couponValue" value="{{ form_data.couponValue }}"  class="form-control" autocomplete="off">
+            </div>
+        {% else %}
+            <div class="col-lg-4 mt-3" id="couponPercentage" style="display:none;">
+                <label for="couponValue">Coupon Value(Percentage): *</label>
+                <input type="number" id="couponValue" name="couponPercent" value="{{ form_data.couponPercent }}"  class="form-control" autocomplete="off">
+            </div>
+            
+            <div class="col-lg-4 mt-3" id="couponFlat">
+                <label for="couponValue">Coupon Value(Flat): *</label>
+                <input type="number" id="couponValue" name="couponValue" value="{{ form_data.couponValue }}"  class="form-control" autocomplete="off">
+            </div>
+        {% endif %}
+        <div class="col-lg-4 mt-3">
+            <label for="minimum_purchase">Minimum Purchase: *</label>
+            <input type="number" id="minimum_purchase" name="minimum_purchase" value="{{ form_data.minimum_purchase }}" required  class="form-control" autocomplete="off">
+        </div>
+        <div class="col-lg-4 mt-3">
+            <label for="maximum_amount_discount">Maximum Amount Discount:</label>
+            <input type="number" min="0" id="maximum_amount_discount" name="maximum_amount_discount" value="{{ form_data.maximum_amount_discount }}" required  class="form-control" autocomplete="off">
+        </div>
+        	
+        <!-- <div class="col-lg-4 mt-3">
+            <label for="couponImage">Coupon Image:</label>
+            <input type="file" id="image" name="image" class="form-control">
+        </div>    -->
+        <div class="col-lg-4 mt-3">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" class="form-control">{{ form_data.description }}</textarea>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'customer_couponlist' %}" class="btn btn-danger">Back</a>
+    </div>
+</form>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <!-- /.content -->
+  </div>
+
+<!-- Add the following script in the head or at the end of your HTML body -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#couponType').on('change', function () {
+            var type = $(this).val();
+            if (type == 'Flat')
+            {
+                $('#couponPercentage').hide();
+                $('#couponFlat').show();
+            }
+            else
+            {
+                $('#couponFlat').hide();
+                $('#couponPercentage').show();                
+            }
+        });
+    });
+</script>
+
+{% include 'backend/footer.html' %}
+
+
+

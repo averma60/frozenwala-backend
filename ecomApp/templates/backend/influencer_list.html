@@ -1,0 +1,73 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+{% load static %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">
+            <?= $page_title;?>
+          </h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">
+              <?= $page_title;?>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-xl">
+
+    <div class="table-responsive">
+      <div class="table-wrapper">
+        <div class="table-title">
+          <div class="row">
+            <div class="col-sm-8">
+              <h2>Influencer <b>Details</b></h2>
+            </div>
+
+          </div>
+        </div>
+
+        <table id="example1" class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Sl No</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Commission(%)</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in influencers %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ i.user.name }}</td>
+              <td>{{ i.user.phone_number }}</td>
+              <td>{{ i.benefit_percentage }}</td>
+              <td>{{ i.start_date|date:"d, M Y" }}</td>
+              <td>{{ i.end_date|date:"d, M Y" }}</td>
+              <td>
+                <a href="{% url 'view_influencer' i.id %}" class="view" title="View" data-toggle="tooltip"><i
+                    class="fa fa-eye"></i></a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+{% include 'backend/footer.html' %}

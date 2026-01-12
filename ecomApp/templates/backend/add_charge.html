@@ -1,0 +1,63 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+   <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Delivery Charge</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="title">Delivery Charge:</label>
+                                    <input type="text" id="title" name="charge" maxlength="255" required class="form-control">
+                                </div>
+                                <div class="mt-4 col-lg-6">
+                                <button type="submit" class="btn btn-primary">Add Delivery Charge</button>
+                                <a href="{% url 'chargeapp' %}" class="btn btn-danger">Back</a>
+                            </div>
+                            </div>
+
+
+
+
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- /.content -->
+  </div>
+
+
+    <!-- Main conten
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

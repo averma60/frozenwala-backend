@@ -1,0 +1,82 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+
+{% load static %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Address Management</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+            <!-- <li class="breadcrumb-item active">Address Management</li> -->
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+
+  <div class="container-fluid">
+    <div class="">
+      <div class="table-wrapper">
+        <div class="col-12">
+          <a href="{% url 'add_address' %}"><button class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Add Address</button></a>
+        </div>
+        <div class="table-title">
+          <div class="row">
+            <div class="col-sm-8"><h2>Address Management <b>Table</b></h2></div>
+          </div>
+        </div>
+
+        <table id="example1" class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Sl No</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Country</th>
+              <th>Zip Code</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.newname }}</td>
+              <td>{{ item.phone }}</td>
+              <td>{{ item.address }}</td>
+              <td>{{ item.city }}</td>
+              <td>{{ item.state }}</td>
+              <td>{{ item.country }}</td>
+              <td>{{ item.zip_code }}</td>
+              <td>
+                {% if item.status == '1' %}
+                <a href="{% url 'deactivate_address' item.id %}" class="btn btn-danger text-white">Deactivate</a>
+                {% else %}
+                <a href="{% url 'activate_address' item.id %}" class="btn btn-success text-white">Activate</a>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'edit_address' item.id %}" class="edit" title="Edit" data-toggle="tooltip"><i style="color: #ff9900;" class="fa fa-edit"></i></a>
+                <a href="{% url 'view_address' item.id %}" class="view" title="View" data-toggle="tooltip"><i style="color: #ff9900;" class="fa fa-eye"></i></a>
+                <a href="{% url 'delete_address' item.id %}"><i style="color: #ff9900;" class="fa fa-trash"></i></a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% include 'backend/footer.html' %}

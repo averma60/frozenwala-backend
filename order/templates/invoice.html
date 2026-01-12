@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        .order-wrapper {
+            min-height: 100vh;
+            /* background: linear-gradient(135deg, #fef3c7, #fff, #fde68a); */
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 20px;
+        }
+
+        /* Invoice Receipt CSS */
+
+        /* Receipt Container */
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 32px;
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            color: #000;
+        }
+
+        /* Header Styles */
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .company-logo img {
+            width: 200px;
+            margin-bottom: 10px;
+        }
+
+        .receipt-title {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 4px;
+        }
+
+        .receipt-subtitle {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        .receipt-brand {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .receipt-company {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .receipt-contact {
+            font-size: 12px;
+            margin-top: 16px;
+        }
+
+        .receipt-contact span {
+            font-weight: 600;
+        }
+
+        /* Invoice Details */
+        .invoice-details {
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .invoice-details>div {
+            margin-bottom: 4px;
+        }
+
+        /* Items Table */
+        .items-table {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            margin-bottom: 16px;
+        }
+
+        .table-header {
+            display: flex;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px 0;
+            border-bottom: 1px solid #000;
+        }
+
+        .table-row {
+            display: flex;
+            font-size: 12px;
+            padding: 4px 0;
+        }
+
+        .col-product {
+            flex: 1;
+            font-weight: 600;
+            max-width: 250px;
+            min-width: 150px;
+            /* Allow product names to wrap to new lines instead of hiding */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.3;
+            padding-right: 8px;
+        }
+
+        .col-rate {
+            width: 80px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .col-dis {
+            width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .col-gst {
+            width: 70px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .col-qty {
+            width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .col-amount {
+            width: 90px;
+            text-align: right;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            font-size: 12px;
+            margin-bottom: 24px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .total-main {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .final-total-row {
+            text-align: end;
+        }
+
+        /* Tax Information */
+        .tax-section {
+            margin-bottom: 24px;
+        }
+
+        .tax-title {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .tax-table {
+            border: 1px solid #000;
+        }
+
+        .tax-header {
+            display: flex;
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+        }
+
+        .tax-row {
+            display: flex;
+            font-size: 12px;
+        }
+
+        .tax-col {
+            flex: 1;
+            text-align: center;
+            padding: 4px;
+            border-right: 1px solid #000;
+        }
+
+        .tax-col:last-child {
+            border-right: none;
+        }
+
+        /* QR Code */
+        .qr-section {
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-placeholder {
+            width: 128px;
+            height: 128px;
+            background: #e5e5e5;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="order-wrapper">
+        <div id="orderContainer" class="order-container" style="opacity: 1; transform: none;">
+            <div class="receipt-container">
+                <div class="receipt-header">
+                    <div class="company-logo text-center"><img src="https://backend.frozenwala.com/static-back/assets/images/Frozenwala%20logo.png"></div>
+                    <div class="receipt-brand">
+                        {% if order.shop_name %}{{order.shop_name}}{% else %}-{% endif %}
+                    </div>
+                    <div class="receipt-company" style="width: 300px;">
+                        {% if order.shop_address %}{{order.shop_address}}{% else %}-{% endif %}
+                    </div>
+                    <div class="receipt-company">
+                        {% if order.shop_city %}{{order.shop_city}}{% else %}-{% endif %}, {% if order.shop_state %}{{order.shop_state}}{% else %}-{% endif %}, {% if order.shop_country %}{{order.shop_country}}{% else %}-{% endif %}
+                    </div>
+                    <div class="receipt-contact">Contact: <span>{% if order.shop_phone %}{{order.shop_phone}}{% else %}-{% endif %}</span></div>
+                    <div class="receipt-contact">GSTIN: <span>{% if order.shop_gstn %}{{order.shop_gstn}}{% else %}-{% endif %}</span></div>
+                </div>
+                <div class="invoice-details">
+                    <div class="invoice-row"><span>Inv No: {% if order.invoice_number %}{{order.invoice_number}}{% else %}-{% endif %}</span><span>Date: {% if order.order_date %}{{order.order_date}}{% else %}-{% endif %}</span></div>
+                    {% if order.is_pickup and order.is_pickup == "1" %}
+                        <div>Customer Name: {% if order.customer_name %}{{order.customer_name}}{% else %}-{% endif %}</div>
+                        <div>Contact No: {% if order.customer_phone %}{{order.customer_phone}}{% else %}-{% endif %}</div>
+                    {% else %}
+                    <div>Pick UP</div>
+                    {% endif %}
+                </div>
+                <div class="items-table">
+                    <div class="table-header">
+                        <div class="col-product">Product Name</div>
+                        <div class="col-rate">Rate</div>
+                        <div class="col-gst">GST %</div>
+                        <div class="col-qty">Qty</div>
+                        <div class="col-amount">Amount</div>
+                    </div>
+                    {% for product in order.products %}
+                        <div class="table-row">
+                            <div class="col-product">{{product.name}}</div>
+                            <div class="col-rate">₹{{product.old_price}}</div>
+                            <div class="col-rate">₹{{product.gst_price}}</div>
+                            <div class="col-qty">{{product.quantity}}</div>
+                            <div class="col-amount">₹{{product.purchase_price}}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="totals-section">
+                    <div class="total-row"><span>Total Qty: {{order.total_quantity}}</span><span>Total: ₹{{order.total_price}}</span></div>
+                    <div class="final-total-row">
+                        {% if order.coupon_discount > 0 %}
+                            <div>Coupon Discount: ₹{{order.coupon_discount}}</div>
+                        {% endif %}
+                        {% if order.wallet_use > 0 %}
+                            <div>Wallet use: ₹{{order.wallet_use}}</div>
+                        {% endif %}
+                        <div>Total saved: ₹{{order.total_saved}}</div>
+                    </div>
+                    <div class="total-main">Total Pay: ₹{{order.total_paid}}</div>
+                </div>
+                <div class="tax-section">
+                    <div class="tax-title">Tax Information</div>
+                    <div class="tax-table">
+                        <div class="tax-header">
+                            <div class="tax-col">Taxable</div>
+                            <div class="tax-col">CGST</div>
+                            <div class="tax-col">SGST</div>
+                            <div class="tax-col">Total GST</div>
+                        </div>
+                        <div class="tax-row">
+                            <div class="tax-col">₹{{order.taxable_amount}}</div>
+                            <div class="tax-col">₹{{order.cgst}}</div>
+                            <div class="tax-col">₹{{order.sgst}}</div>
+                            <div class="tax-col">₹{{order.total_gst_amount}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+
+{% load static %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">{{ page_title }}</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">{{ page_title }}</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <section class="vh-100">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-9">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <div class="row align-items-center pt-4 pb-3">
+                                {% if item %}
+                                <div class="container">
+                                    <div class="col-md-12">
+                                        <div class="row align-items-center py-3">
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">Name:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.newname }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">Phone:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.phone }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">Address:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.address }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">City:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.city }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">State:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.state }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">Country:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.country }}</p>
+                                                </div>
+                                            </div>
+                                            <hr class="mx-n3">
+                                            <div class="row align-items-center py-3">
+                                                <div class="col-md-3 ps-5">
+                                                    <h6 class="mb-0">Zip Code:</h6>
+                                                </div>
+                                                <div class="col-md-9 pe-5">
+                                                    <p class="form-control-lg">{{ item.zip_code }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="mx-n3">
+                                    <div class="row px-5 py-4">
+                                        <div class="col-md-12">
+                                            <a href="{% url 'back/address_list' %}" class="btn btn-danger btn-lg">Back</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <br><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Main content -->
+</div>
+{% include 'backend/footer.html' %}

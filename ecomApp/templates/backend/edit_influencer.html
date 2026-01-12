@@ -1,0 +1,102 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+{% load static %}
+<style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit Influencer</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if influencer %}
+                            <form method="POST" enctype="multipart/form-data" action="{% url 'update_influencer' influencer.id %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="name">Name:</label>
+                                        <input type="text" value="{{ influencer.name }}" id="name" name="name" maxlength="255" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="email">Email:</label>
+                                        <input type="email" value="{{ influencer.email }}" id="email" name="email" maxlength="255" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="phone">Phone:</label>
+                                        <input type="text" value="{{ influencer.phone }}" id="phone" name="phone" maxlength="255" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="password">Password:</label>
+                                        <input type="password" id="password" name="password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="address">Address:</label>
+                                        <textarea class="form-control" id="address" name="address" rows="3" required>{{ influencer.address }}</textarea>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="type">Type:</label>
+                                        <input type="text" value="{{ influencer.type }}" id="type" name="type" maxlength="255" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="commission">Commission:</label>
+                                        <input type="number" value="{{ influencer.commission }}" id="commission" name="commission" required class="form-control">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="code">Code:</label>
+                                        <input type="text" value="{{ influencer.code }}" id="code" name="code" maxlength="255" required class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="commission">PassBook Details:</label>
+                                        <textarea type="text"  id="pass" name="pass" required class="form-control">{{ influencer.passbook }}</textarea>
+                                    </div>
+
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">Update Influencer</button>
+                                    <a href="{% url 'influencer_list' %}" class="btn btn-danger">Back</a>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- /.content -->
+</div>
+
+<script>
+    document.querySelectorAll('textarea.ckeditor').forEach(function (textarea) {
+        CKEDITOR.replace(textarea.id, {
+            // Custom configuration options here
+            height: 300
+        });
+    });
+</script>
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+
+{% include 'backend/footer.html' %}

@@ -1,0 +1,186 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active"><?= $page_title;?></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+
+     <div class="container-fluid">
+
+   <div class="">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-sm-8"><h2>Item Wise Order <b>Chart</b></h2></div>
+            </div>
+        </div>
+
+
+   <form id="search_form" method="GET" action="{% url 'itemwise_chart' %}">
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="order_type">Order Type:</label>
+            <select class="form-control" id="product_id" name="product_id">
+                <option value="" {% if not request.GET.order_type %}selected{% endif %}>--Select--</option>
+                {% for product in products %}
+            <option value="{{ product.id }}" {% if request.GET.order_type == product.id %}selected{% endif %}>
+                {% if request.GET.order_type == product.id %}Selected: {% endif %}
+                {{ product.title }}
+            </option>
+        {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="from_date">From Date:</label>
+            <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request.GET.from_date }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="to_date">To Date:</label>
+            <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request.GET.to_date }}">
+        </div><div class="form-group col-md-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+
+        </div>
+    </div>
+</form>
+          <div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">ItemWise Order  Chart</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart-responsive" style="background-color: white;">
+            <canvas id="itemWiseChart"></canvas>
+        </div>
+
+
+    </div>
+</div>
+<script>
+    // Function to load form data from local storage
+    function loadFormData() {
+        const formData = JSON.parse(localStorage.getItem('formData'));
+        if (formData) {
+            document.getElementById('order_type').value = formData.orderType;
+            document.getElementById('from_date').value = formData.fromDate;
+            document.getElementById('to_date').value = formData.toDate;
+        }
+    }
+
+    // Function to save form data to local storage
+    function saveFormData() {
+        const formData = {
+            orderType: document.getElementById('order_type').value,
+            fromDate: document.getElementById('from_date').value,
+            toDate: document.getElementById('to_date').value
+        };
+        localStorage.setItem('formData', JSON.stringify(formData));
+    }
+
+    // Load form data when the page loads
+    window.addEventListener('load', loadFormData);
+
+    // Save form data when the form is submitted
+    document.getElementById('search_form').addEventListener('submit', saveFormData);
+</script>
+<script>
+    window.onload = function() {
+        // Clear form fields on page load
+        document.getElementById('order_type').selectedIndex = 0;
+        document.getElementById('from_date').value = '';
+        document.getElementById('to_date').value = '';
+    }
+</script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var ctx = document.getElementById('itemWiseChart').getContext('2d');
+
+    // Extracting dates and orders from Django template variable
+    var dates = [];
+    var orders = [];
+    {% for entry in itemwise_report %}
+        dates.push("{{ entry.product_id__title }}");
+        orders.push({{ entry.total_order_amount }});
+    {% endfor %}
+
+    // Create the chart with the extracted data
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dates, // Dates as labels
+            datasets: [{
+                label: 'Total Orders',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Light blue background color
+                borderColor: 'rgba(54, 162, 235, 1)', // Dark blue border color
+                borderWidth: 1,
+                data: orders, // Total orders data
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'white' // Set Y axis label color to white
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'white' // Set X axis label color to white
+                    },
+                    gridLines: {
+                        color: 'rgba(255, 255, 255, 0.1)' // Set grid line color to light gray
+                    }
+                }]
+            },
+            legend: {
+                labels: {
+                    fontColor: 'white' // Set legend label color to white
+                }
+            },
+            maintainAspectRatio: false, // Prevent the chart from being constrained to the aspect ratio
+            responsive: true, // Allow the chart to be responsive
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+            }
+        }
+    });
+      var canvas = document.getElementById('itemWiseChart');
+    canvas.style.width = '20cm';
+    canvas.style.height = '20cm'
+</script>
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->
+

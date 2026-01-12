@@ -1,0 +1,149 @@
+
+   {% include 'backend/influencer_header.html' %}
+   {% include 'backend/influencer_sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">sell</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+
+     <div class="container-fluid">
+
+   <div class="">
+<!--    <div class="table-wrapper">-->
+<!--        <div class="table-title">-->
+<!--            <div class="row">-->
+<!--                <div class="col-sm-8"><h2>Item Wise Order <b>Report</b></h2></div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+
+<!--   <form id="search_form" method="GET" action="{% url 'itemwise_report' %}">-->
+<!--    <div class="form-row">-->
+<!--        <div class="form-group col-md-4">-->
+<!--            <label for="order_type">Order Type:</label>-->
+<!--            <select class="form-control" id="product_id" name="product_id">-->
+<!--                <option value="" {% if not request.GET.order_type %}selected{% endif %}>&#45;&#45;Select&#45;&#45;</option>-->
+<!--                {% for product in products %}-->
+<!--            <option value="{{ product.id }}" {% if request.GET.order_type == product.id %}selected{% endif %}>-->
+<!--                {% if request.GET.order_type == product.id %}Selected: {% endif %}-->
+<!--                {{ product.title }}-->
+<!--            </option>-->
+<!--        {% endfor %}-->
+<!--            </select>-->
+<!--        </div>-->
+<!--        <div class="form-group col-md-4">-->
+<!--            <label for="from_date">From Date:</label>-->
+<!--            <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request.GET.from_date }}">-->
+<!--        </div>-->
+<!--        <div class="form-group col-md-4">-->
+<!--            <label for="to_date">To Date:</label>-->
+<!--            <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request.GET.to_date }}">-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <button type="submit" class="btn btn-primary">Search</button>-->
+<!--</form>-->
+<!--         <table class="table table-striped table-hover table-bordered">-->
+<!--            <thead class="thead-dark">-->
+<!--                <tr>-->
+<!--                <th scope="col">Sl No</th>-->
+<!--                    <th scope="col">Order ID</th>-->
+<!--                    <th scope="col">Total Amount</th>-->
+<!--                </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--                {% for order in orders_by_order_id %}-->
+<!--                <tr>-->
+<!--                <td>{{ forloop.counter }}</td>-->
+<!--                    <td>{{ order.order_id }}</td>-->
+<!--                    <td>{{ order.total_amount }}</td>-->
+<!--                </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+<!--        </table>-->
+
+        <h1 class="mt-4 mb-4">Total Sell by Date</h1>
+       <table id="ordersByDateTable" class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Amount (INR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in orders_by_influencer_and_date %}
+                            <tr>
+                                <td>{{ entry.created_at__date }}</td>
+                                <td>{{ entry.total_amount }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+        <tfoot>
+            <tr>
+                <td  align="right">Total Sum: </td>
+                <td align="left"> {{ total_sum }}</td>
+            </tr>
+        </tfoot>
+                    </table>
+    </div>
+</div>
+<script>
+    // Function to load form data from local storage
+    function loadFormData() {
+        const formData = JSON.parse(localStorage.getItem('formData'));
+        if (formData) {
+            document.getElementById('order_type').value = formData.orderType;
+            document.getElementById('from_date').value = formData.fromDate;
+            document.getElementById('to_date').value = formData.toDate;
+        }
+    }
+
+    // Function to save form data to local storage
+    function saveFormData() {
+        const formData = {
+            orderType: document.getElementById('order_type').value,
+            fromDate: document.getElementById('from_date').value,
+            toDate: document.getElementById('to_date').value
+        };
+        localStorage.setItem('formData', JSON.stringify(formData));
+    }
+
+    // Load form data when the page loads
+    window.addEventListener('load', loadFormData);
+
+    // Save form data when the form is submitted
+    document.getElementById('search_form').addEventListener('submit', saveFormData);
+</script>
+<script>
+    window.onload = function() {
+        // Clear form fields on page load
+        document.getElementById('order_type').selectedIndex = 0;
+        document.getElementById('from_date').value = '';
+        document.getElementById('to_date').value = '';
+    }
+</script>
+{% include 'backend/influencer_footer.html' %}
+
+  <!-- /.navbar -->
+

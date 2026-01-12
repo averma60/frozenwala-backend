@@ -1,0 +1,428 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+ <style>
+.dataTables_wrapper .dataTables_paginate {
+    display: none;
+}
+</style>
+ <style>
+.dataTables_info {
+    display: none;
+}
+</style>
+
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Order Details</h1>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <p {% if message.tags %} class="success-message"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </ul>
+{% endif %}
+<!--    <p class="success-message" >Status saved successfully!</p>-->
+
+          </div>
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Order Details</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+            <!-- general form elements -->
+
+
+            <!-- Input addon -->
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title">Order Details for an Customer</h3>
+              </div>
+              <div class="card-body">
+<!--                <div class="input-group mb-3">-->
+<!--                  <div class="input-group-prepend">-->
+<!--                    <span class="input-group-text">@</span>-->
+<!--                  </div>-->
+<!--                  <input type="text" class="form-control" placeholder="Username">-->
+<!--                </div>-->
+{%if sel_ordform %}
+                <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Order Id</b></h5>
+                    <div class="input-group">
+                      <p class="form-control">{{sel_ordform.first.id}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Customer Details</b></h5>
+                    <div class="input-group">
+                     <p > {% if sel_ordform.first.newname %}
+            {{ sel_ordform.first.newname }}<br>
+        {% endif %}
+        {% if sel_ordform.first.phone %}
+            {{ sel_ordform.first.phone }}<br>
+        {% endif %}</p>
+                    </div>
+                  </div>
+                </div>
+
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Customer's Address</b></h5>
+                    <div class="input-group">
+                          <p >  {% if sel_ordform.first.address %}
+
+            {{ sel_ordform.first.address }}<br>
+        {% endif %}
+        {% if sel_ordform.first.city %}
+            {{ sel_ordform.first.city }},
+        {% endif %}
+        {% if sel_ordform.first.state %}
+            {{ sel_ordform.first.state }}<br>
+        {% endif %}
+        {% if sel_ordform.first.country %}
+            {{ sel_ordform.first.country }},
+        {% endif %}
+        {% if sel_ordform.first.zip_code %}
+            {{ sel_ordform.first.zip_code }}<br>
+        {% endif %}
+        {% if sel_ordform.first.delivery_time %}
+            Delivery Time: {{ sel_ordform.first.delivery_time }}
+        {% endif %}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+                  <div class="col-lg-6">
+                                     <h5 class="mt-4 mb-2"><b>Influencer's Code</b></h5>
+
+                  {% if sel_ordform.first.influencer_code and sel_ordform.first.order_id %}
+                         <p > {{sel_ordform.first.influencer_code}}  </p >
+                        {% else %}
+                          <p > NA</p>
+                        {% endif %}
+                  </div>
+<!--                  &lt;!&ndash; /.col-lg-6 &ndash;&gt;-->
+<!--                  <div class="col-lg-6">-->
+<!--                   <h5 class="mt-4 mb-2"><b>Product Name</b></h5>-->
+<!--                    <div class="input-group">-->
+<!--                        <p class="form-control">{{sel_ordform.product_id.title}}  {{sel_ordform.quantity}}{{sel_ordform.product_id.item_measurement}}</p>-->
+<!--                    </div>-->
+<!--                  </div>-->
+                </div>
+
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Payment Id</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">{{sel_ordform.first.payment_id}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Coupon Code</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">{{sel_ordform.first.couponcode}}</p>
+                    </div>
+                  </div>
+                </div>
+              
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Order Date</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">{{sel_ordform.first.created_at|date:"j/n/Y"}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Total Items</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">{{total_quantity}}</p>
+                    </div>
+                  </div>
+                </div>
+              
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Wallet Use</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{sel_ordform.first.walet_value}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Coupon Discount</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{sel_ordform.first.dicounted_price}}</p>
+                    </div>
+                  </div>
+                </div>
+              
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Total Amount</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{total_price}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Total Saved</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{total_saved}}</p>
+                    </div>
+                  </div>
+                </div>
+              
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Taxable Amount</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{taxable_amount}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>CGST</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{cgst}}</p>
+                    </div>
+                  </div>
+                </div>
+              
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>SGST</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{sgst}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Total GST</b></h5>
+                    <div class="input-group">
+                        <p class="form-control">₹{{total_gst_amount}}</p>
+                    </div>
+                  </div>
+                </div>
+
+              <div class="row">
+                  <div class="col-lg-6">
+                   <h5 class="mt-4 mb-2"><b>Pay Amount</b></h5>
+                    <div class="input-group">
+                       <p class="form-control" name="price">₹{{sel_ordform.first.total_price}}</p>
+                    </div>
+                    <!-- /input-group -->
+                  </div>
+
+                  <!-- /.col-lg-6 -->
+                 <div class="col-lg-6">
+    <h5 class="mt-4 mb-2"><b>Status</b></h5>
+
+    <form method="post" action="{% url 'newupdate_status' sel_ordform.first.id %}">
+        {% csrf_token %}
+        <div class="input-group">
+            <select  class="form-control" name="selected_status" id="status">
+                <option  class="btn btn-primary"value="1" {% if sel_ordform.first.status == "1" %}selected{% endif %}>Pending</option>
+                <option  class="btn btn-primary"value="2" {% if sel_ordform.first.status == "2" %}selected{% endif %}>Confirm</option>
+                <option  class="btn btn-primary"value="3" {% if sel_ordform.first.status == "3" %}selected{% endif %}>Picked Up</option>
+                <option  class="btn btn-primary"value="4" {% if sel_ordform.first.status == "4" %}selected{% endif %}>Delivered</option>
+                <option  class="btn btn-primary"value="5" {% if sel_ordform.first.status == "5" %}selected{% endif %}>Cancel</option>
+<!--                <option  class="btn btn-primary"value="6" {% if sel_ordform.first.status == "6" %}selected{% endif %}>Return Request</option>-->
+<!--                <option  class="btn btn-primary"value="7" {% if sel_ordform.first.status == "7" %}selected{% endif %}>Return Accepted</option>-->
+            </select>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+<br><br>
+
+                            <div class="col-lg-12">
+    <table id="example1" class="table  table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Sl No</th>
+            <th>Item Name</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Purchase Price</th>
+            <th>GST %</th>
+            <th>Total Price</th>
+<!--            <th>Subtotal</th>-->
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in sel_ordform %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product_id.title }}</td>
+            <td>{{ item.quantity }} {{ item.product_id.item_measurement }}</td>
+            <td>
+              {{ item.product_id.item_old_price }}
+            </td>
+            <td>
+              ₹{{ item.product_id.item_new_price }}
+            </td>
+            <td>₹{{ item.gst_amount }}</td>
+            <td>₹{{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+                            </div>
+
+
+                   <div class="px-5 py-4 row-4">
+                    <a href="{%  url 'orderapp' %}" class="btn btn-danger btn-lg">Back</a>
+                </div>
+
+  {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+
+
+
+
+
+
+
+<script>
+$(document).ready(function() {
+    $('#example1').DataTable({
+        "paging": false,
+    });
+
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

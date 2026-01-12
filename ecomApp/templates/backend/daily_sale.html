@@ -1,0 +1,81 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active"><?= $page_title;?></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+
+     <div class="container-fluid">
+
+   <div class="">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-sm-8"><h2>Daily Sale <b>Report</b></h2></div>
+            </div>
+        </div>
+
+ <table id="example1" class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Sl No</th>
+            <th>Sale Date</th>
+            <th>Sold By</th>
+            <th>Order Id</th>
+            <th>Order Amount</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in ordform %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.created_at }}</td>
+            <td>Frozenwala Admin</td>
+
+            </td>
+            <td>{{ item.order_id }}</td>
+            <td>{{ item.total_price }}</td>
+
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+      
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#example1').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copyCsv'
+            ]
+        });
+    });
+</script>
+
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->
+

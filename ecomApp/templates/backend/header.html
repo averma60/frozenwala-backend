@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FrozenWala</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+</head>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+
+  <!-- Preloader -->
+<!--  <div class="preloader flex-column justify-content-center align-items-center">-->
+<!--    <img class="animation__wobble" src="dist/img/AdminLTELogo.png" alt="FrozenWalaLogo" height="60" width="60">-->
+<!--  </div>-->
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-black navbar-dark">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+
+<audio id="notificationSound">
+
+</audio>
+
+
+<li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+
+        </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="orderDropdown">
+<!--    <span class="dropdown-item dropdown-header" id="pending-orders-count">Pending Orders: Loading...</span>-->
+<!--    <div class="dropdown-divider"></div>-->
+    <!-- Order details will be added here dynamically -->
+
+          <div class="dropdown-divider"></div>
+          <a href="{%  url 'orderapp' %}" class="dropdown-item dropdown-footer">See All Orders</a>
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#"><i class="far fa-user"></i></a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <div  class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{%  static 'assets/images/Frozenwala logo.png' %}"  class="img-size-50 mr-3 img-circle">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                 FrozenWala
+<!--                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>-->
+                </h3>
+<!--                <a href="#" class="text-sm">Update Profile</a>-->
+<a href="{% url 'backend/verify_email' %}" class="dropdown-item-title" >Change Password</a>
+              </div>
+
+            <!-- Message End -->
+          </div>
+          <div class="dropdown-divider"></div>
+
+          <div class="dropdown-divider"></div>
+
+
+          <div class="dropdown-divider"></div>
+              <form method="post" action="{% url 'backend/logout' %}">
+    {% csrf_token %}
+    <button class="dropdown-item dropdown-footer" type="submit">Logout</button>
+</form>
+
+
+        </div>
+      </li>
+    </ul>
+  </nav>
+<!--<script>-->
+<!--    // Variable to store the previous pending orders count-->
+<!--    let previousPendingOrdersCount = 0;-->
+
+<!--    function fetchOrderDetailsAndCount() {-->
+<!--        // Fetch pending orders count-->
+<!--        fetch('/pending-orders/count/')-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                // Update the content of the badge with the count-->
+<!--                document.getElementById('pending-orders-badge').textContent = data.pending_orders_count;-->
+<!--                // Update the content of the dropdown header with the count-->
+<!--                document.getElementById('pending-orders-count').textContent = `Pending Orders: ${data.pending_orders_count}`;-->
+
+<!--                // Play notification sound if there are new orders-->
+<!--&lt;!&ndash;                if (data.pending_orders_count > previousPendingOrdersCount) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    const notificationSound = document.getElementById('notificationSound');&ndash;&gt;-->
+<!--&lt;!&ndash;                    notificationSound.play();&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+
+<!--                // Update the previous pending orders count-->
+<!--                previousPendingOrdersCount = data.pending_orders_count;-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error fetching pending orders count:', error);-->
+<!--            });-->
+
+<!--        // Fetch order details for dropdown-->
+<!--        fetch('/render-order-dropdown/')-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                // Get the dropdown menu element-->
+<!--                const dropdownMenu = document.getElementById('orderDropdown');-->
+
+<!--                // Clear existing items-->
+<!--                dropdownMenu.innerHTML = '';-->
+
+<!--                // Add new order items-->
+<!--                data.orders.forEach(order => {-->
+<!--                    const orderItem = document.createElement('div');-->
+<!--                    orderItem.classList.add('dropdown-item');-->
+
+<!--                    // Construct the HTML content for the order details-->
+<!--                    orderItem.innerHTML = `-->
+<!--                        <strong>Order ID:</strong> ${order.id}<br>-->
+<!--                        <strong>Status:</strong> ${order.status}<br>-->
+<!--                        <strong>Created At:</strong> ${order.created_at}<br>-->
+<!--                        &lt;!&ndash; Add more order details as needed &ndash;&gt;-->
+<!--                    `;-->
+
+<!--                    dropdownMenu.appendChild(orderItem);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error('Error fetching order details:', error);-->
+<!--            });-->
+<!--    }-->
+
+<!--    // Call the function initially and then every second-->
+<!--    document.addEventListener('DOMContentLoaded', fetchOrderDetailsAndCount);-->
+<!--    setInterval(fetchOrderDetailsAndCount, 1000); // Update every second-->
+<!--</script>-->
+
+
+<script>
+  /*
+    // Function to fetch pending orders count and check for new orders
+    function fetchPendingOrdersData() {
+        // Fetch pending orders count
+        fetch('/pending-orders/count/')
+            .then(response => response.json())
+            .then(data => {
+                const previousCount = parseInt(localStorage.getItem('previousOrderCount')) || 0;
+                const currentCount = data.pending_orders_count;
+
+                // Check if there are new orders
+                if (currentCount > previousCount) {
+                    // Play the notification sound
+                    const notificationSound = document.getElementById('notificationSound');
+                    notificationSound.play();
+                }
+
+                // Update the content of the badge with the count
+                document.getElementById('pending-orders-badge').textContent = currentCount;
+                // Update local storage with the current count
+                localStorage.setItem('previousOrderCount', currentCount);
+            })
+            .catch(error => {
+                console.error('Error fetching pending orders count:', error);
+            });
+    }
+
+    // Call the function initially and then every second
+    document.addEventListener('DOMContentLoaded', fetchPendingOrdersData);
+    setInterval(fetchPendingOrdersData, 1000); // Update every second
+  */
+</script>

@@ -1,0 +1,500 @@
+{% load static %}
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="" class="brand-link">
+      <img src="{%  static 'assets/images/Frozenwala logo.png' %}" alt="FrozenWala Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">FrozenWala</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+<!--      <div class="user-panel mt-3 pb-3 mb-3 d-flex">-->
+<!--        <div class="image">-->
+<!--          <img src="{%  static 'assets/images/Frozenwala logo.png' %}" class="img-circle elevation-2" alt="User Image">-->
+<!--        </div>-->
+<!--        <div class="info">-->
+<!--          <a href="#" class="d-block">Admin Panel</a>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <!-- SidebarSearch Form -->
+
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item menu-open">
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'backend/dashboard' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+<!--          <li class="nav-item">-->
+<!--            <a href="{%  url 'backend/charts' %}" class="nav-link">-->
+<!--              <i class="nav-icon fas fa-th"></i>-->
+<!--              <p>-->
+<!--                Charts-->
+<!--              </p>-->
+<!--            </a>-->
+<!--          </li>-->
+<li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Category
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'catagoryapp' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Category</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+                    <li class="nav-item">
+
+           <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Delivery Charge
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'chargeapp' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Delivery Charge</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{%  url 'payment_options' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Delivery Charge</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+              <li class="nav-item">
+
+           <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Influencer
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'influencer_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Influencer</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+               <li class="nav-item">
+
+           <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Benifits
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'purchase_benefit_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Purchase Benifit</p>
+                </a>
+              </li>
+
+            </ul>
+                 <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'installation_benefit_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p> Installation Benifit</p>
+                </a>
+              </li>
+
+            </ul>
+                 <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'referral_benefit_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Referral Benifit</p>
+                </a>
+              </li>
+
+            </ul>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'wallet_benefits' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Wallet Benifit</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+
+
+
+
+                       <li class="nav-item">
+
+           <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Shop Address
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'back/address_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Shop Address</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+<!--<li class="nav-item">-->
+<!--            <a href="#" class="nav-link">-->
+<!--              <i class="nav-icon fas fa-table"></i>-->
+<!--              <p>-->
+<!--              Product-->
+<!--                <i class="fas fa-angle-left right"></i>-->
+<!--              </p>-->
+
+<!--            </a>-->
+<!--            <ul class="nav nav-treeview">-->
+<!--              <li class="nav-item">-->
+<!--                <a href="{%  url 'productapp' %}" class="nav-link">-->
+<!--                  <i class="far fa-circle nav-icon"></i>-->
+<!--                  <p>Manage Product</p>-->
+<!--                </a>-->
+<!--              </li>-->
+
+<!--            </ul>-->
+
+<!--          </li>-->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+              Customer List
+                <i class="fas fa-angle-left right"></i>
+              </p>
+
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'customerlist' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Customer</p>
+                </a>
+              </li>
+
+            </ul>
+
+          </li>
+<li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+              Menu
+                <i class="fas fa-angle-left right"></i>
+              </p>
+
+            </a>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'item_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Menu</p>
+                </a>
+              </li>
+
+
+              <li class="nav-item">
+                <a href="{%  url 'deal_of_the_day' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Deal Of the Day Item</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{%  url 'most_popular' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Most Popular</p>
+                </a>
+
+          
+              <li class="nav-item">
+                <a href="{%  url 'recommended' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Recommended Item</p>
+                </a>
+              </li>
+
+            </ul>
+
+          </li>
+
+            <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+              Advertisement
+                <i class="fas fa-angle-left right"></i>
+              </p>
+
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'advertisement_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Advertisement</p>
+                </a>
+              </li>
+
+            </ul>
+
+          </li>
+<li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+              Banner
+                <i class="fas fa-angle-left right"></i>
+              </p>
+
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'banner_list' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Banner</p>
+                </a>
+              </li>
+
+            </ul>
+
+          </li>
+<li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Inventory
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'stock' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Inventory</p>
+                </a>
+              </li>
+
+            </ul>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Report
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'daily_sale' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Daily Sale Report</p>
+                </a>
+              </li>
+
+            </ul>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'profit_report' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>ProfitLoss Report</p>
+                </a>
+              </li>
+
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'daywise_report' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>DayWise Order Report</p>
+                </a>
+              </li>
+
+            </ul>
+  <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'itemwise_report' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>ItemWise Order Report</p>
+                </a>
+              </li>
+
+            </ul>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'category_wise_sales_report' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>CategoryWise Order Report</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+
+
+
+
+
+
+
+
+
+            <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Report Analysis
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'daily_chart' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Daily Sale Chart</p>
+                </a>
+              </li>
+
+            </ul>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'profit_chart' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>ProfitLoss Chart</p>
+                </a>
+              </li>
+
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'daywise_chart' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>DayWise Order Chart</p>
+                </a>
+              </li>
+
+            </ul>
+  <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'itemwise_chart' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>ItemWise Order Chart</p>
+                </a>
+              </li>
+
+            </ul>
+             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'category_wise_sales_chart' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>CategoryWise Order Chart</p>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+
+
+
+
+
+<li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+               Order Details
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'orderapp' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Order</p>
+                </a>
+              </li>
+
+            </ul>
+<!--          <ul class="nav nav-treeview">-->
+<!--              <li class="nav-item">-->
+<!--                <a href="{%  url 'confirmorderapp' %}" class="nav-link">-->
+<!--                  <i class="far fa-circle nav-icon"></i>-->
+<!--                  <p>View Order</p>-->
+<!--                </a>-->
+<!--              </li>-->
+
+<!--            </ul>-->
+
+
+          </li>
+           <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+              Customer Coupon
+                <i class="fas fa-angle-left right"></i>
+              </p>
+
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{%  url 'customer_couponlist' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manage Customer Coupon</p>
+                </a>
+              </li>
+
+            </ul>
+
+          </li>
+
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+

@@ -1,0 +1,97 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active"><?= $page_title;?></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+<section class="vh-100" >
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-xl-9">
+
+
+{%if sel_catform %}
+
+        <div class="card" style="border-radius: 15px;">
+          <div class="card-body">
+
+            <div class="row align-items-center pt-4 pb-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Catagory name</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+                <p class="form-control form-control-lg">{{sel_catform.name}}</p>
+
+              </div>
+            </div>
+
+
+            <hr class="mx-n3">
+
+            <div class="row align-items-center py-3">
+              <div class="col-md-3 ps-5">
+
+                <h6 class="mb-0">Catagory Image</h6>
+
+              </div>
+              <div class="col-md-9 pe-5">
+
+
+                 {% if sel_catform.image %}
+        <img src="{{ sel_catform.image.url }}" alt="Image" width="200"
+     height="150">
+    {% else %}
+        <p>No image found.</p>
+    {% endif %}
+
+
+              </div>
+            </div>
+
+            <hr class="mx-n3">
+
+            <div class="px-5 py-4 row-4">
+
+              <a href="{%  url 'catagoryapp' %}" class="btn btn-danger btn-lg">Back</a>
+            </div>
+
+          </div>
+        </div>
+    </form>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+    <!-- Main content -->
+
+      <!-- /.content -->
+  </div>
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

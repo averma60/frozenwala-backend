@@ -1,0 +1,107 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+  <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+<!--              <li class="breadcrumb-item"><a href="#">Home</a></li>-->
+<!--              <li class="breadcrumb-item active"><?= $page_title;?></li>-->
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+
+       <div class="container-fluid">
+
+    <div class="">
+        <div class="table-wrapper">
+
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-8"><h2>Customer <b>Details</b></h2></div>
+
+                </div>
+            </div>
+
+            <table id="example1" class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sl No</th>
+                        <th>Image</th>
+                        <th>Name </th>
+                        <th>Email-Id</th>
+                        <th style="width:2cm;">Phone</th>
+                        <th style="width:2cm;">Referral Code</th>
+                        <th>Total Recharge Amount</th>
+                        <th>Last Recharge Date</th>
+                        <th>Total balance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in banform %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td> {% if i.profile_photo %}
+        <img src="{{ i.profile_photo.url }}" alt="Image" width="30"
+     height="30">
+    {% else %}
+        <img src=" {%  static 'assets/images/Frozenwala logo.png' %} " alt="Image" width="30" height="30"
+    {% endif %}</td>
+                        <td>{{i.name}}</td>
+
+                      <td>{% if i.email %}
+    {{ i.email }}
+  {% else %}
+    NA
+  {% endif %}</td>
+                      <td style="width:2cm;">{{i.phone_number}}</td>
+                      <td style="width:2cm;">{{i.referral_code}}</td>
+                      <td class="text-center">₹{{i.total_recharge_amount}}</td>
+                      <td class="text-center">{% if i.last_recharge_date %}{{i.last_recharge_date}}{% else %}-{% endif %}</td>
+                      <td class="text-center">₹{{i.walet}}</td>
+
+                        <td>{% if i.status %}
+               <a href="{% url 'customerlist/deactivate_customer' i.id %}" class="btn btn-danger text-white">Deactivate</a>
+            {% else %}
+               <a href="{% url 'customerlist/activate_customer' i.id %}" class="btn btn-success text-white">Activate</a>
+            {% endif %}</td>
+
+<!--                        <td>-->
+
+<!--&lt;!&ndash;                            <a href="{% url 'view_item' i.id %}" class="view" title="View" data-toggle="tooltip"><i class="fa fa-eye"></i></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <a href="{% url 'edit_item' i.id %}" class="edit" title="Edit" data-toggle="tooltip"><i class="fa fa-edit"></i></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <a href="{% url 'delete_item' i.id %}" ><i class="fa fa-trash"></i></a>&ndash;&gt;-->
+<!--                        </td>-->
+                    </tr>
+                {% endfor %}
+
+
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+
+      <!-- /.content -->
+  </div>
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->

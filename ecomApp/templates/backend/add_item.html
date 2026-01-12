@@ -1,0 +1,179 @@
+ {% include 'backend/header.html' %}
+   {% include 'backend/sidebar.html' %}
+
+
+ {% load static %}
+ <style>
+    .success-message {
+        color: green;
+        font-weight: bold;
+        border: 1px solid green;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #dff0d8; /* Optional background color */
+    }
+</style>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+   <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Item</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="title">Title:</label>
+                                    <input type="text" id="title" name="title" maxlength="255" required class="form-control">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="description">Description:</label>
+                                    <input type="text" id="description" name="description"  class="form-control">
+                                </div>
+                            </div>
+                            <hr>
+                            <br>
+                            <br>
+                            <div class="row">
+    <div class="col-lg-4">
+        <label for="deal_of_the_day">Deal Of The Day</label>
+        <input type="checkbox" id="deal_of_the_day" name="deal_of_the_day"  >
+    </div>
+    <div class="col-lg-4">
+        <label for="most_popular">Most Popular</label>
+        <input type="checkbox" id="most_popular" name="most_popular"  >
+    </div>
+    <div class="col-lg-4">
+        <label for="recommended">Recommended</label>
+        <input type="checkbox" id="recommended" name="recommended"  >
+    </div>
+</div><br>
+                            <br>
+                            <hr>
+
+
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center py-3">
+        <div class="col-md-3 ps-5">
+            <h6 class="mb-0">Item Photo</h6>
+        </div>
+        <div class="col-md-9 pe-5">
+                <img id="item_photo_preview" src="" alt="No Image" width="200" height="150">
+
+            <input type="file" name="item_photo" id="item_photo_input" onchange="previewPhoto(event)">
+        </div>
+    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <label for="category">Category:</label>
+                                    <select id="category" name="category" class="form-control">
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="item_old_price">Item's Old Price(MRP):</label>
+                                    <input type="number" id="item_old_price" name="item_old_price" required class="form-control">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="discount">Discount (%):</label>
+                                    <input type="number" id="discount" name="discount" required class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+<!--                                <div class="col-lg-6">-->
+<!--                                    <label for="item_quantity">Item Quantity:</label>-->
+<!--                                    <input type="number" id="item_quantity" name="item_quantity" required class="form-control">-->
+<!--                                </div>-->
+                                <div class="col-lg-6">
+                                    <label for="item_new_price">Offer Price:</label>
+                                    <input type="number" id="item_new_price" name="item_new_price" required class="form-control" >
+                                </div>
+                            </div>
+ <div class="row">
+<!--                                <div class="col-lg-6">                                                               <label for="item_quantity">Item Measurement(eg. G/Kg):</label>-->
+
+<!--    <select required name="weight_units">-->
+<!--        <option value="" disabled selected>Select One</option>-->
+<!--        <option value="kg" class="form-control">kg</option>-->
+<!--        <option value="gm" class="form-control">gm</option>-->
+<!--        <option value="packet" class="form-control">packet</option>-->
+<!--    </select>-->
+
+<!--</div>-->
+ <div class="col-lg-6">
+                                    <label for="item_new_price">Making Price:</label>
+                                    <input type="number" id="mp" name="mp" required class="form-control" >
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">Add Item</button>
+                                <a href="{% url 'item_list' %}" class="btn btn-danger">Back</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- /.content -->
+  </div>
+
+<script>
+   // Function to calculate discount
+function calculateDiscount() {
+    // Get values from input fields
+    var itemOldPrice = parseFloat(document.getElementById('item_old_price').value);
+    var itemNewPrice = parseFloat(document.getElementById('item_new_price').value);
+
+    // Calculate discount
+    var discount = ((itemOldPrice - itemNewPrice) / itemOldPrice) * 100;
+
+    // Round off the discount to the nearest integer
+    discount = Math.round(discount);
+
+    // Update the value in the discount input field
+    document.getElementById('discount').value = discount;
+}
+
+// Add event listeners to trigger the calculation
+document.getElementById('item_old_price').addEventListener('input', calculateDiscount);
+document.getElementById('item_new_price').addEventListener('input', calculateDiscount);
+
+// Call the calculation function when the page is fully loaded
+window.addEventListener('load', function() {
+    calculateDiscount();
+});
+
+</script>
+<script>
+        function previewPhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const preview = document.getElementById('item_photo_preview');
+                preview.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    <!-- Main conten
+{% include 'backend/footer.html' %}
+
+  <!-- /.navbar -->
