@@ -131,6 +131,7 @@ class RegistrationView(APIView):
             name = request_data.get('name')
             influencer_code = request_data.get('influencer_code')
             refer_by = request_data.get('referral_code')
+            ref_code = request_data.get('ref_code')
 
 
             try:
