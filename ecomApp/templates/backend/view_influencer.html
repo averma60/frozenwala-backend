@@ -58,6 +58,8 @@
                                         <th>Name</th>
                                         <th>Phone Number</th>
                                         <th>Total Orders</th>
+                                        <th>Total Order Amount</th>
+                                        <th>Last Purchased At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,6 +70,8 @@
                                             <td>{{ ref.name }}</td>
                                             <td>{{ ref.phone_number }}</td>
                                             <td>{{ ref.order_count }}</td>
+                                            <td>{{ ref.total_order_amount }}</td>
+                                            <td>{{ ref.last_purchased_at }}</td>
                                             </tr>
                                         {% endfor %}
                                         {% else %}

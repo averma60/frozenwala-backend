@@ -36,14 +36,14 @@ def login_view(request):
                 login(request, user)
                 next_url = request.GET.get('next', reverse('backend/dashboard'))
                 return redirect(next_url)
-            else:
-                return render(request, 'backend/login.html', {'form': form, 'error': 'Invalid login credentials'})
+            # else:
+        return render(request, 'backend/login.html', {'form': form, 'error': 'Invalid login credentials'})
     else:
         form = CustomAuthenticationForm()
     if request.session.get('logged_out'):
         del request.session['logged_out']
 
-    return render(request, 'backend/login.html', {'form': form, 'error': 'Invalid login credentials'})
+    return render(request, 'backend/login.html', {'form': form})
 
 
 

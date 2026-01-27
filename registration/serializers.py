@@ -81,11 +81,29 @@ class AddressAdminSerializer(serializers.ModelSerializer):
 
 class MyRefferalsSerializer(serializers.ModelSerializer):
     order_count = serializers.SerializerMethodField()
+    total_order_amount = serializers.SerializerMethodField()
+    last_purchased_at = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ['name', 'phone_number', 'profile_photo', 'order_count']
+        fields = ['name', 'phone_number', 'profile_photo', 'order_count', 'total_order_amount', 'last_purchased_at']
 
     def get_order_count(self, obj):
         total_orders = Order.objects.filter(user_id=obj.id)
         return total_orders.count()
+
+    def get_total_order_amount(self, obj):
+        total_orders = Order.objects.filter(user_id=obj.id)
+        total_price = 0
+        for item in total_orders:
+            total_price += item.product_id.item_old_price * item.quantity
+        
+        first_order = total_orders.first()
+        if first_order.delivery_price:
+            total_price += int(first_order.delivery_price)
+
+        return total_price
+
+    def get_last_purchased_at(self, obj):
+        last_order = Order.objects.filter(user_id=obj.id).order_by('-created_at').first()
+        return last_order.created_at if last_order else None
