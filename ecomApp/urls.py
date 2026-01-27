@@ -66,4 +66,9 @@ urlpatterns = [
     path('backend/edit-wallet-benefit/<int:id>/', edit_wallet_benefit, name='edit_wallet_benefit'),
     path('backend/delete-wallet-benefit/<int:id>/', delete_wallet_benefit, name='delete_wallet_benefit'),
 
+    path('backend/menu-settings/', menu_settings, name='menu_settings'),
+    path('backend/add-menu-setting/', add_menu_setting, name='add_menu_setting'),
+    path('backend/edit-menu-setting/<int:id>/', edit_menu_setting, name='edit_menu_setting'),
+    path('backend/delete-menu-setting/<int:id>/', delete_menu_setting, name='delete_menu_setting'),
+
 ]

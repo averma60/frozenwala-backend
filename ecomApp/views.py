@@ -12,7 +12,7 @@ from django.db.models import F
 from django.shortcuts import render
 from datetime import timedelta
 
-from menu_management.models import Item
+from menu_management.models import Item, MenuSettings
 from django.db.models import Count, Avg, DecimalField, Value
 # Create your views here.
 from collections import defaultdict
@@ -1218,3 +1218,53 @@ def delete_wallet_benefit(request, id):
 
     messages.success(request, "Wallet benefit deleted successfully.")
     return redirect('wallet_benefits')
+
+@login_required(login_url='backend/login')
+def menu_settings(request):
+    settings = MenuSettings.objects.all().order_by('-id')
+    return render(request, 'backend/menu_settings.html', {
+        'settings': settings
+        })
+
+@login_required(login_url='backend/login')
+def add_menu_setting(request):
+    if MenuSettings.objects.all().exists():
+        messages.error(request, "Only one menu setting allowed. Please edit the existing one.")
+        return redirect('menu_settings')
+
+    if request.method == "POST":
+        show_out_of_stock = request.POST.get('show_out_of_stock') == 'on'
+
+        MenuSettings.objects.all().delete()
+
+        MenuSettings.objects.create(
+            show_out_of_stock=show_out_of_stock
+        )
+
+        messages.success(request, "Menu setting added successfully")
+        return redirect('menu_settings')
+
+    return render(request, 'backend/menu_settings_add.html')
+
+@login_required(login_url='backend/login')
+def edit_menu_setting(request, id):
+    setting = get_object_or_404(MenuSettings, id=id)
+
+    if request.method == "POST":
+        setting.show_out_of_stock = request.POST.get('show_out_of_stock') == 'on'
+        setting.save()
+
+        messages.success(request, "Menu setting updated successfully")
+        return redirect('menu_settings')
+
+    return render(request, 'backend/menu_settings_edit.html', {
+        'setting': setting,
+    })
+
+
+@login_required(login_url='backend/login')
+def delete_menu_setting(request, id):
+    setting = get_object_or_404(MenuSettings, id=id)
+    setting.delete()
+    messages.success(request, "Menu setting deleted successfully")
+    return redirect('menu_settings')

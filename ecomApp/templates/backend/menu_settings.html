@@ -1,0 +1,81 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+
+{% load static %}
+
+<div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"><?= $page_title;?></h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+
+    <div class="">
+        <div class="table-wrapper">
+            {% if settings.count == 0 %}
+             <div class="col-12 ">
+                <a href="{%  url 'add_menu_setting' %}"><button class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Add  </button></a>
+              </div>
+            {% endif %}
+            {% if messages %}
+              {% for message in messages %}
+                  <div class="alert 
+                      {% if message.tags == 'success' %}alert-success
+                      {% elif message.tags == 'error' %}alert-danger
+                      {% elif message.tags == 'warning' %}alert-warning
+                      {% else %}alert-info{% endif %}">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+            {% endif %}
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-8"><h2>Menu Settings <b>Details</b></h2></div>
+                </div>
+            </div>
+            <table id="example1" class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                      <th>Sl No</th>
+                      <th>Show Out Of Stock</th>
+                      <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for s in settings %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>
+                          {% if s.show_out_of_stock %}
+                            Yes
+                          {% else %}
+                            No
+                          {% endif %}
+                        </td>
+                        <td>
+                          <a href="{% url 'edit_menu_setting' s.id %}">
+                            <i class="fa fa-edit"></i>
+                          </a>
+                          <a href="{% url 'delete_menu_setting' s.id %}" class="ml-2">
+                            <i class="fa fa-trash"></i>
+                          </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% include 'backend/footer.html' %}

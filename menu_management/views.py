@@ -2,7 +2,7 @@ from django.db.models import  Q, Avg, Count
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Item, ItemImage, ItemReview, ItemHighlights
+from .models import Item, ItemImage, ItemReview, ItemHighlights, MenuSettings
 from ecomApp.models  import Catagory,Stock, DeliveryCharge
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -284,7 +284,11 @@ class RecommendedAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        items = Item.objects.filter(itemhighlights__recommended=True, status=True) #, stock__openingstock__gt=0
+        menu_setting = MenuSettings.objects.first()
+        if menu_setting and menu_setting.show_out_of_stock:
+            items = Item.objects.filter(itemhighlights__recommended=True, status=True) #, stock__openingstock__gt=0
+        else:
+            items = Item.objects.filter(itemhighlights__recommended=True, status=True, stock__openingstock__gt=0)
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
 

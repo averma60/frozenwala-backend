@@ -74,3 +74,14 @@ class ItemHighlights(models.Model):
     def __str__(self):
         return f"Highlights for {self.item.name}"
 
+class MenuSettings(models.Model):
+    show_out_of_stock = models.BooleanField(
+        default=True,
+        help_text="Show out of stock products on the app/website"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Menu Settings"

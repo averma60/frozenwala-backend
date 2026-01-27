@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Item, ItemImage
+from .models import Item, ItemImage, MenuSettings
+
+
 admin.site.register(Item)
 admin.site.register(ItemImage)
-
-# Register your models here.
+admin.site.register(MenuSettings)

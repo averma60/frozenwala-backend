@@ -1,0 +1,54 @@
+{% include 'backend/header.html' %}
+{% include 'backend/sidebar.html' %}
+{% load static %}
+
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Add Menu Setting</h3>
+                        </div>
+
+                        <div class="card-body">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert 
+                                        {% if message.tags == 'success' %}alert-success
+                                        {% elif message.tags == 'error' %}alert-danger
+                                        {% elif message.tags == 'warning' %}alert-warning
+                                        {% else %}alert-info{% endif %}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label>Show Out Of Stock Products</label>
+                                        <input type="checkbox" style="width: auto;" name="show_out_of_stock" class="form-control" required />
+                                    </div>
+
+                                    <div class="col-lg-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            Add Menu Setting
+                                        </button>
+                                        <a href="{% url 'menu_settings' %}" class="btn btn-danger">
+                                            Back
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
