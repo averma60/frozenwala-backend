@@ -338,7 +338,7 @@ def update_status(request, id):
     return redirect('orderapp')  # Redirect to order list page on error
 
 
-razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY))
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_TEST_API_KEY, settings.RAZORPAY_TEST_SECRET_KEY))
 
 @csrf_exempt
 @api_view(['POST'])
