@@ -530,7 +530,7 @@ class CreateWalletOrderAPIView(APIView):
         if not user_id or not amount:
             return Response({"status": False, "message": "Incomplete data"})
 
-        client = razorpay.Client(auth=(settings.RAZORPAY_TEST_API_KEY, settings.RAZORPAY_TEST_SECRET_KEY))
+        client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY))
 
         order = client.order.create({
             "amount": amount,
