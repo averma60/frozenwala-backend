@@ -19,7 +19,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from walet.models import PurchaseBenefit, WalletTransaction
 from registration.models import AddressAdmin
-
+import random
 
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
@@ -1184,3 +1184,17 @@ class DownloadOrderInvoice(APIView):
         )
 
         return response
+
+@csrf_exempt
+@api_view(['POST'])
+def create_qr_order(request):
+    total_amount = request.data.get('total_amount', 0)
+    if not total_amount:
+        return JsonResponse({'error': 'Total amount is required'}, status=400)
+
+    order_amount = int(float(total_amount) * 100)
+    order_currency = 'INR'
+    order_receipt = 'order_receipt_' + str(random.randint(100000, 999999))
+    razorpay_order = razorpay_client.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
+    razorpay_order_id = razorpay_order['id']
+    return JsonResponse({'razorpay_order_id': razorpay_order_id, 'order_amount': order_amount, 'status': 'success'}, status=200)

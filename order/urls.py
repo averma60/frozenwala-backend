@@ -26,8 +26,8 @@ urlpatterns = [
     
     path('api/payment-options/', PaymentOptionListCreateView.as_view()),
     
-    path('api/order/<str:order_id>/invoice/', DownloadOrderInvoice.as_view(), name='order_invoice')
+    path('api/order/<str:order_id>/invoice/', DownloadOrderInvoice.as_view(), name='order_invoice'),
 
-    # path('api/create_order/', create_order, name='create_order')
+    path('api/create-qr-order/', create_qr_order, name='create_qr_order'),
     # ... other URLs
 ]
