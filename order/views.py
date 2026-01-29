@@ -21,6 +21,8 @@ from walet.models import PurchaseBenefit, WalletTransaction
 from registration.models import AddressAdmin
 import random
 
+from menu_management.models import Item
+
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -1185,6 +1187,8 @@ class DownloadOrderInvoice(APIView):
 
         return response
 
+razorpay_client_test = razorpay.Client(auth=(settings.RAZORPAY_TEST_API_KEY, settings.RAZORPAY_TEST_SECRET_KEY))
+
 @csrf_exempt
 @api_view(['POST'])
 def create_qr_order(request):
@@ -1195,6 +1199,101 @@ def create_qr_order(request):
     order_amount = int(float(total_amount) * 100)
     order_currency = 'INR'
     order_receipt = 'order_receipt_' + str(random.randint(100000, 999999))
-    razorpay_order = razorpay_client.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
+    razorpay_order = razorpay_client_test.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
     razorpay_order_id = razorpay_order['id']
     return JsonResponse({'razorpay_order_id': razorpay_order_id, 'order_amount': order_amount, 'status': 'success'}, status=200)
+
+@csrf_exempt
+@api_view(['POST'])
+def verify_qr_order(request):
+    try:
+        razorpay_payment_id = request.data.get('razorpay_payment_id')
+        razorpay_order_id = request.data.get('razorpay_order_id')
+        razorpay_signature = request.data.get('razorpay_signature')
+        products = request.data.get('products', [])
+        total_price = request.data.get('total_price', 0)
+
+        if not products or not total_price:
+            return JsonResponse({'error': 'No products or total price provided'}, status=400)
+
+        if not razorpay_payment_id or not razorpay_order_id or not razorpay_signature:
+            return JsonResponse({'error': 'Missing payment details'}, status=400)
+
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        }
+
+        razorpay_client_test.utility.verify_payment_signature(params_dict)
+        
+        cgst_amount = 0
+        sgst_amount = 0
+        total_gst = 0
+        gst_rate = 0
+        gstn = ""
+        
+        address_admin = AddressAdmin.objects.first()
+        if address_admin:
+            gstn = address_admin.gstn
+            gst_rate = address_admin.gst_rate
+            gst_amount = round((float(total_price) * gst_rate) / (100 + gst_rate), 2)
+            cgst_amount = round(gst_amount / 2, 2)
+            sgst_amount = round(gst_amount - cgst_amount, 2)
+            total_gst = round(gst_amount, 2)
+
+        order = None
+
+        for prod in products:
+            product = Item.objects.filter(id=prod['id']).first()
+            if not product:
+                continue
+
+            order = Order.objects.create(
+                order_id=razorpay_order_id,
+                user_id=None,
+                product_id=product,
+                payment_id=razorpay_payment_id,
+                pick_up=1,
+                status=1,
+                quantity=prod['qty'],
+                price="{:.2f}".format(prod['price']),
+                total_price=total_price,
+                previous_price=total_price,
+                dicounted_price=0,
+                delivery_price=0,
+                signature=razorpay_signature,
+                newname="Guest User",
+                phone="0000000000",
+                address="Instant Order",
+                city="Instant Order",
+                state="Instant Order",
+                country="Instant Order",
+                zip_code="Instant Order",
+                delivery_time="Instant Order",
+                gstn=gstn,
+                gst_rate=gst_rate,
+                cgst_amount=cgst_amount,
+                sgst_amount=sgst_amount,
+                total_gst=total_gst,
+                order_type="qr_code"
+            )
+
+            stock = Stock.objects.get(item_id=prod['id'])
+            stock.openingstock -= prod['qty']
+            stock.save()
+
+        if not order:
+            return JsonResponse({'error': 'No valid products found to create order'}, status=400)
+
+        order_data = {
+            "order_id": order.order_id,
+            "total_price": order.total_price,
+            "total_gst": order.total_gst,
+            "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        return JsonResponse({'message': 'Payment successful and order created', 'success': True, 'order_data': order_data}, status=200)
+    except Exception as e:
+        print("Order payment verify error:", str(e))
+        return JsonResponse({'error': 'Something went wrong!'}, status=500)

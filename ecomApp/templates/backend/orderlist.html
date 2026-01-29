@@ -99,6 +99,7 @@
                         <th>Customer Name</th>
                         <th>Phone Number</th>
                         <th>Pick Up</th>
+                        <th>Order Type</th>
 
                         <th>Ordered At</th>
 
@@ -136,6 +137,7 @@
                         <td>Yes</td>
                         {% endif %}
 
+                        <td>{% if i.order_type == "standard" %}Standard{% else %}Instant Order{% endif %}</td>
                         <td>{{i.created_at}}</td>
  {% if i.influencer_code and i.order_id %}
                         <td>{{i.influencer_code}}</td>

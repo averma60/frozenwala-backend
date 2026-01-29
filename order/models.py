@@ -35,7 +35,7 @@ class Order(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)#made CustomUser later
     payment_option = models.ForeignKey(PaymentOption, on_delete=models.SET_NULL, null=True)
     product_id = models.ForeignKey(Item, on_delete=models.CASCADE)
-    couponcode = models.CharField(max_length=50)
+    couponcode = models.CharField(max_length=50, blank=True, null=True)
     quantity=models.IntegerField()
     price = models.FloatField()
     total_price = models.FloatField()
@@ -53,9 +53,9 @@ class Order(models.Model):
     zip_code = models.CharField(max_length=20)
     delivery_time=models.CharField(max_length=50)
     order_item_id=models.CharField(max_length=50)
-    influencer_code=models.CharField(max_length=90,null=True)
+    influencer_code=models.CharField(max_length=90, blank=True, null=True)
     dicounted_price=models.CharField(max_length=50)
-    walet_value=models.CharField(max_length=50)
+    walet_value=models.CharField(max_length=50, blank=True, null=True)
     percentage_benefit = models.FloatField(default=0.0)  # Added field for percentage benefit
     purchase_benefit = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
@@ -69,6 +69,8 @@ class Order(models.Model):
     cgst_amount = models.FloatField(default=0)
     sgst_amount = models.FloatField(default=0)
     total_gst = models.FloatField(default=0)
+
+    order_type = models.CharField(choices=[('standard', 'Standard'), ('qr_code', 'QR Code')], max_length=10, default='standard')
 
     def __str__(self):
         return  f"{self.id}"

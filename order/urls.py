@@ -23,11 +23,12 @@ urlpatterns = [
     path('api/invoice/', OrderDetailsAPIView.as_view(), name='grouped-order-list'),
 
     path('api/generate_invoice/', generate_invoice, name='generate_invoice'),
-    
+
     path('api/payment-options/', PaymentOptionListCreateView.as_view()),
-    
+
     path('api/order/<str:order_id>/invoice/', DownloadOrderInvoice.as_view(), name='order_invoice'),
 
     path('api/create-qr-order/', create_qr_order, name='create_qr_order'),
+    path('api/verify-qr-order/', verify_qr_order, name='verify_qr_order'),
     # ... other URLs
 ]
