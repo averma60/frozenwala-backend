@@ -563,7 +563,7 @@ class VerifyWalletOrderAPIView(APIView):
             return Response({"status": False, "message": "User not found!"})
 
         client = razorpay.Client(
-            auth=(settings.RAZORPAY_TEST_API_KEY, settings.RAZORPAY_TEST_SECRET_KEY)
+            auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY)
         )
 
         # Verify payment signature

@@ -23,6 +23,7 @@ import random
 
 from menu_management.models import Item
 
+
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -114,6 +115,8 @@ from django.http import HttpResponse, JsonResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.enums import TA_CENTER
 
+from .utils import update_stock
+
 #for noww...
 class OrderView(APIView):
     def post(self, request):
@@ -180,6 +183,7 @@ def confirmorderlist(request):
 
     }
     return render(request,'backend/confirmorderlist.html',context)
+@login_required(login_url='backend/login')
 @login_required(login_url='backend/login')
 def view_item(request, myid):
     sel_ordform = Order.objects.filter(order_id=myid)
@@ -431,8 +435,6 @@ def create_order(request):
                 cgst_amount = round(gst_amount / 2, 2)
                 sgst_amount = round(gst_amount - cgst_amount, 2)
                 total_gst = round(gst_amount, 2)
-            
-            order = None
 
             # Create orders for each item in the cart
             for cart_item in cart_items:
@@ -519,10 +521,10 @@ def create_order(request):
                             transaction_type="Influencer Benefit",
                         )
 
-            for cart_item in cart_items:
-                stock = get_object_or_404(Stock, item_id=cart_item.product_id)
-                stock.openingstock -= cart_item.quantity
-                stock.save()
+            # for cart_item in cart_items:
+            #     stock = get_object_or_404(Stock, item_id=cart_item.product_id)
+            #     stock.openingstock -= cart_item.quantity
+            #     stock.save()
 
             cart_items.delete()
 
@@ -576,10 +578,12 @@ def verify_payment(request):
                 product_id = order.product_id
                 quantity = order.quantity
                 # stock = Stock.objects.select_for_update().get(item_id=product_id)
-                stock = Stock.objects.get(item_id=product_id)
+                # stock = Stock.objects.get(item_id=product_id)
 
-                stock.openingstock -= quantity
-                stock.save()
+                # stock.openingstock -= quantity
+                # stock.save()
+                update_stock(product_id.id, quantity)
+
             first_order = orders.first()
             user_id = first_order.user_id.id
             total_amount = first_order.total_price
@@ -769,7 +773,6 @@ class OrderDetailsAPIView(APIView):
                         "total_gst": order.total_gst,
                         "gstn": order.gstn,
                         "gst_rate": order.gst_rate,
-                        "company_name": company_address,
                         "seller_address": seller_address,
 
                         # "order_item_id": order.order_item_id
@@ -1187,7 +1190,7 @@ class DownloadOrderInvoice(APIView):
 
         return response
 
-razorpay_client_test = razorpay.Client(auth=(settings.RAZORPAY_TEST_API_KEY, settings.RAZORPAY_TEST_SECRET_KEY))
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY))
 
 @csrf_exempt
 @api_view(['POST'])
@@ -1199,7 +1202,7 @@ def create_qr_order(request):
     order_amount = int(float(total_amount) * 100)
     order_currency = 'INR'
     order_receipt = 'order_receipt_' + str(random.randint(100000, 999999))
-    razorpay_order = razorpay_client_test.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
+    razorpay_order = razorpay_client.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
     razorpay_order_id = razorpay_order['id']
     return JsonResponse({'razorpay_order_id': razorpay_order_id, 'order_amount': order_amount, 'status': 'success'}, status=200)
 
@@ -1225,7 +1228,7 @@ def verify_qr_order(request):
             'razorpay_signature': razorpay_signature
         }
 
-        razorpay_client_test.utility.verify_payment_signature(params_dict)
+        razorpay_client.utility.verify_payment_signature(params_dict)
         
         cgst_amount = 0
         sgst_amount = 0
@@ -1279,9 +1282,10 @@ def verify_qr_order(request):
                 order_type="qr_code"
             )
 
-            stock = Stock.objects.get(item_id=prod['id'])
-            stock.openingstock -= prod['qty']
-            stock.save()
+            # stock = Stock.objects.get(item_id=prod['id'])
+            # stock.openingstock -= prod['qty']
+            # stock.save()
+            update_stock(prod['id'], prod['qty'])
 
         if not order:
             return JsonResponse({'error': 'No valid products found to create order'}, status=400)
