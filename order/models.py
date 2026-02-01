@@ -71,6 +71,12 @@ class Order(models.Model):
     total_gst = models.FloatField(default=0)
 
     order_type = models.CharField(choices=[('standard', 'Standard'), ('qr_code', 'QR Code')], max_length=10, default='standard')
+    cancellation_reason = models.TextField(null=True, blank=True)
+    
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    picked_up_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return  f"{self.id}"

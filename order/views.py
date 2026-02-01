@@ -20,6 +20,8 @@ from django.contrib.auth.decorators import login_required
 from walet.models import PurchaseBenefit, WalletTransaction
 from registration.models import AddressAdmin
 import random
+from django.urls import reverse
+from django.utils import timezone as django_timezone
 
 from menu_management.models import Item
 
@@ -288,8 +290,11 @@ def generate_random_order_id():
 def update_status(request, id):
     if not request.user.is_staff:
         return redirect('backend/login')
+
     if request.method == 'POST':
+        now = django_timezone.now()
         selected_status_str = request.POST.get('selected_status')
+        cancel_reason = request.POST.get('cancel_reason', '')
         try:
             selected_status = int(selected_status_str)
         except (TypeError, ValueError):
@@ -309,40 +314,59 @@ def update_status(request, id):
         # Update status for each order
         for order_id in orders_to_update:
             order_id.status = selected_status
+            
+            if selected_status == 2 and not order_id.confirmed_at:
+                order_id.confirmed_at = now
+            elif selected_status == 3 and not order_id.picked_up_at:
+                order_id.picked_up_at = now
+            elif selected_status == 4 and not order_id.delivered_at:
+                order_id.delivered_at = now
+            elif selected_status == 5 and cancel_reason:
+                order_id.cancelled_at = now
+                order_id.cancellation_reason = cancel_reason
+
             order_id.save()
         # Send notification to the user if the status has changed
         if selected_status != 1:
-            uid=CustomUser.objects.get(id=order.user_id.id)
-            registration_id = uid.registration_id if uid.registration_id else 0
+            uid = None
+            if order.user_id:
+                uid = CustomUser.objects.get(id=order.user_id.id)
+            registration_id = uid.registration_id if uid and uid.registration_id else 0
             if selected_status == 2:
                 title = "Order Confirmed"
                 message = "Your order has been confirmed."
-                SendNotificationAPI().send_notification(registration_id, title, message)
+                if registration_id:
+                    SendNotificationAPI().send_notification(registration_id, title, message)
 
             elif selected_status == 3:
                 title = "Order Picked Up"
                 message = "Congrats! Your order has been picked up from FrozenWala Store Ruby Tower Jogeswari West, Mumbai, Maharashtra, India, 400102."
-                SendNotificationAPI().send_notification(registration_id, title, message)
+                if registration_id:
+                    SendNotificationAPI().send_notification(registration_id, title, message)
 
             elif selected_status == 4:
                 title = "Order Delivered"
                 message = "Your order has been delivered successfully."
-                SendNotificationAPI().send_notification(registration_id, title, message)
+                if registration_id:
+                    SendNotificationAPI().send_notification(registration_id, title, message)
 
             elif selected_status == 5:
                 title = "Order Canceled"
                 message = "Sorry! Your order has been canceled due to some internal reason."
-                SendNotificationAPI().send_notification(registration_id, title, message)
+                if registration_id:
+                    SendNotificationAPI().send_notification(registration_id, title, message)
 
             elif selected_status == 7:
                 title = "Return Request Accepted"
                 message = "Your return request has been accepted by the store."
-                SendNotificationAPI().send_notification(registration_id, title, message)
+                if registration_id:
+                    SendNotificationAPI().send_notification(registration_id, title, message)
 
         messages.success(request, 'Status updated successfully!')
 
-    return redirect('orderapp')  # Redirect to order list page on error
-
+    return redirect(
+        reverse('orderapp/view_item', args=[order.order_id])
+    )
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY))
 
@@ -774,6 +798,12 @@ class OrderDetailsAPIView(APIView):
                         "gstn": order.gstn,
                         "gst_rate": order.gst_rate,
                         "seller_address": seller_address,
+                        "cancellation_reason": order.cancellation_reason,
+                        "placed_at": order.created_at,
+                        "confirmed_at": order.confirmed_at,
+                        "picked_up_at": order.picked_up_at,
+                        "delivered_at": order.delivered_at,
+                        "cancelled_at": order.cancelled_at,
 
                         # "order_item_id": order.order_item_id
                     }
