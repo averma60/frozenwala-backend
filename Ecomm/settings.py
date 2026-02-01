@@ -131,7 +131,7 @@ DATABASES = {
         'NAME': 'Frozenwala_db',
         'USER': 'root',
         'PASSWORD': 'StrongPassword@123!',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_TRANS_TABLES',

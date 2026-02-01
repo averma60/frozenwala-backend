@@ -45,6 +45,7 @@ urlpatterns = [
     path('api/item/', ProductsId.as_view(), name=''),
     path('api/veg-items/', VegItemListAPIView.as_view(), name='veg-items'),
     path('api/auth/veg-items/', AuthVegItemListAPIView.as_view(), name='veg-items'),
+    path('api/item-brands/', ItemBrandsAPIView.as_view(), name='item-brands'),
 
 ]
 

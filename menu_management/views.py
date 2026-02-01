@@ -284,11 +284,21 @@ class RecommendedAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        brand_param = request.query_params.get('brand', None)
+
         menu_setting = MenuSettings.objects.first()
         if menu_setting and menu_setting.show_out_of_stock:
             items = Item.objects.filter(itemhighlights__recommended=True, status=True) #, stock__openingstock__gt=0
         else:
             items = Item.objects.filter(itemhighlights__recommended=True, status=True, stock__openingstock__gt=0)
+        
+        if brand_param:
+            brand_list = [b.strip() for b in brand_param.split(",")]
+            query = Q()
+            for b in brand_list:
+                query |= Q(brand_name__iexact=b)
+            items = items.filter(query)
+
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
 
@@ -814,3 +824,10 @@ class ItemSearchAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Please provide a search query"}, status=status.HTTP_400_BAD_REQUEST)
+
+class ItemBrandsAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        brands = Item.objects.filter(status=True, brand_name__isnull=False).exclude(brand_name__exact='').values_list('brand_name', flat=True).distinct()
+        return Response(brands, status=status.HTTP_200_OK)
