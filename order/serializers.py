@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, PaymentOption
+from .models import DeliverySlot, Order, PaymentOption
 from menu_management.models import Item
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -31,3 +31,8 @@ class PaymentOptionSerializer(serializers.ModelSerializer):
             'is_active',
             'description'
         ]
+
+class DeliverySlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliverySlot
+        fields = ['id', 'start_time', 'end_time', 'is_active']

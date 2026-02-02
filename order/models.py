@@ -77,6 +77,18 @@ class Order(models.Model):
     picked_up_at = models.DateTimeField(null=True, blank=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
+    
+    delivery_slot = models.ForeignKey('DeliverySlot', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return  f"{self.id}"
+
+class DeliverySlot(models.Model):
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    max_orders = models.PositiveIntegerField(default=10)
+    booked_orders = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.start_time}-{self.end_time}"

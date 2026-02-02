@@ -71,4 +71,9 @@ urlpatterns = [
     path('backend/edit-menu-setting/<int:id>/', edit_menu_setting, name='edit_menu_setting'),
     path('backend/delete-menu-setting/<int:id>/', delete_menu_setting, name='delete_menu_setting'),
 
+    path('backend/delivery-slots/', delivery_slots, name='delivery_slots'),
+    path('backend/add-delivery-slot/', add_delivery_slot, name='add_delivery_slot'),
+    path('backend/edit-delivery-slot/<int:id>/', edit_delivery_slot, name='edit_delivery_slot'),
+    path('backend/delete-delivery-slot/<int:id>/', delete_delivery_slot, name='delete_delivery_slot'),
+
 ]

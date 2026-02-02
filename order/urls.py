@@ -30,5 +30,7 @@ urlpatterns = [
 
     path('api/create-qr-order/', create_qr_order, name='create_qr_order'),
     path('api/verify-qr-order/', verify_qr_order, name='verify_qr_order'),
+
+    path('api/delivery-slots/', DeliverySlotListAPIView.as_view(), name='delivery_slots_list'),
     # ... other URLs
 ]

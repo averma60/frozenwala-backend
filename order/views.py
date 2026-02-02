@@ -1,4 +1,4 @@
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, F
 from django.shortcuts import render, redirect
 from cart.models import CartCoupon
 
@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets, generics
-from .models import  Order, PaymentOption
+from .models import  DeliverySlot, Order, PaymentOption
 from .serializers import OrderSerializer
 from rest_framework import status
 from rest_framework.response import Response
@@ -89,15 +89,13 @@ from uuid import uuid4  # Import UUID generator
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Order
-from .serializers import GroupedOrderSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Order
-from .serializers import OrderSerializer, PaymentOptionSerializer
+from .serializers import OrderSerializer, PaymentOptionSerializer, DeliverySlotSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Order
-from .serializers import OrderSerializer
 from django.db.models import Max, Q
 from datetime import date
 from rest_framework import serializers
@@ -394,6 +392,7 @@ def create_order(request):
         delivery_time = request.data.get('delivery_time', ""),
         influencer_code = request.data.get('influencer_code', "")
         payment_option = request.data.get('payment_option', "")
+        delivery_slot = request.data.get('delivery_slot', "")
 
         if not payment_option:
             return JsonResponse({'message': 'Please select a payment option','status':'400'}, status=400)
@@ -459,6 +458,9 @@ def create_order(request):
                 cgst_amount = round(gst_amount / 2, 2)
                 sgst_amount = round(gst_amount - cgst_amount, 2)
                 total_gst = round(gst_amount, 2)
+            
+            if delivery_slot:
+                delivery_slot = DeliverySlot.objects.filter(id=delivery_slot).first()
 
             # Create orders for each item in the cart
             for cart_item in cart_items:
@@ -512,6 +514,10 @@ def create_order(request):
                     order.purchase_benefit = purchase_benefit_amount
                     order.save()
 
+                if delivery_slot and delivery_slot.is_active and delivery_slot.booked_orders < delivery_slot.max_orders:
+                    order.delivery_slot = delivery_slot
+                    order.save()
+
             if order and order.purchase_benefit:
                 user.walet += float(order.purchase_benefit)
                 user.save()
@@ -525,6 +531,10 @@ def create_order(request):
                     closing_bal=order.purchase_benefit,
                     transaction_type="Purchase Benefit",
                 )
+
+            if order.delivery_slot and delivery_slot:
+                delivery_slot.booked_orders += 1
+                delivery_slot.save()
 
             if order:
                 order_price = Decimal(str(order.price))
@@ -1331,3 +1341,9 @@ def verify_qr_order(request):
     except Exception as e:
         print("Order payment verify error:", str(e))
         return JsonResponse({'error': 'Something went wrong!'}, status=500)
+
+class DeliverySlotListAPIView(APIView):
+    def get(self, request):
+        slots = DeliverySlot.objects.filter(is_active=True, booked_orders__lt=F('max_orders')).order_by('start_time')
+        serializer = DeliverySlotSerializer(slots, many=True)
+        return Response(serializer.data)

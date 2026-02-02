@@ -20,9 +20,10 @@ from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Avg, Sum, F, Window, Subquery, OuterRef
 from django.shortcuts import render
-from order.models import PaymentOption
+from order.models import PaymentOption, DeliverySlot
 from walet.models import WalletBenefit, WalletTransaction
 from django.db.models.functions import Coalesce
+
 
 @login_required(login_url='backend/login')
 def dashboard(request):
@@ -1268,3 +1269,90 @@ def delete_menu_setting(request, id):
     setting.delete()
     messages.success(request, "Menu setting deleted successfully")
     return redirect('menu_settings')
+
+@login_required(login_url='backend/login')
+def delivery_slots(request):
+    slots = DeliverySlot.objects.all().order_by('-id')
+    return render(request, 'backend/delivery_slots.html', {
+        'slots': slots
+        })
+
+@login_required(login_url='backend/login')
+def add_delivery_slot(request):
+    if request.method == "POST":
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        is_active = request.POST.get('is_active', False) == 'on'
+
+        if start_time >= end_time:
+            messages.error(request, "End time must be greater than start time")
+            return redirect('add_delivery_slot')
+
+        overlapping_slot = DeliverySlot.objects.filter(
+            start_time__lt=end_time,
+            end_time__gt=start_time
+        ).exists()
+
+        if overlapping_slot:
+            messages.error(
+                request,
+                "Another delivery slot already exists in this time range"
+            )
+            return redirect('add_delivery_slot')
+
+        DeliverySlot.objects.create(
+            start_time=start_time,
+            end_time=end_time,
+            is_active=is_active
+        )
+
+        messages.success(request, "Delivery slot added successfully")
+        return redirect('delivery_slots')
+
+    return render(request, 'backend/delivery_slots_add.html')
+
+@login_required(login_url='backend/login')
+def edit_delivery_slot(request, id):
+    delivery_slot = get_object_or_404(DeliverySlot, id=id)
+
+    if request.method == "POST":
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        max_orders = request.POST.get('max_orders')
+        is_active = request.POST.get('is_active') == 'on'
+
+        if start_time >= end_time:
+            messages.error(request, "End time must be greater than start time")
+            return redirect('edit_delivery_slot', id=id)
+
+        overlapping_slot = DeliverySlot.objects.filter(
+            start_time__lt=end_time,
+            end_time__gt=start_time
+        ).exclude(id=id).exists()
+
+        if overlapping_slot:
+            messages.error(
+                request,
+                "Another delivery slot already exists in this time range"
+            )
+            return redirect('edit_delivery_slot', id=id)
+
+        delivery_slot.start_time = start_time
+        delivery_slot.end_time = end_time
+        delivery_slot.max_orders = max_orders
+        delivery_slot.is_active = is_active
+        delivery_slot.save()
+
+        messages.success(request, "Delivery slot updated successfully")
+        return redirect('delivery_slots')
+
+    return render(request, 'backend/delivery_slots_edit.html', {
+        'delivery_slot': delivery_slot
+    })
+
+@login_required(login_url='backend/login')
+def delete_delivery_slot(request, id):
+    delivery_slot = get_object_or_404(DeliverySlot, id=id)
+    delivery_slot.delete()
+    messages.success(request, "Delivery slot deleted successfully")
+    return redirect('delivery_slots')
