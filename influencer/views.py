@@ -10,11 +10,12 @@ from django.contrib.auth.hashers import make_password
 from ecomApp.models import CustomUser
 from order.models import Order
 from registration.serializers import MyRefferalsSerializer
+from django.utils import timezone
 
 
 @login_required(login_url='backend/login')
 def influencer_list(request):
-    influencers = InfluencerRecord.objects.all().order_by('-id')
+    influencers = InfluencerRecord.objects.filter(end_date__gte=timezone.now()).order_by('-id')
     return render(request, 'backend/influencer_list.html', {'influencers': influencers})
 
 
