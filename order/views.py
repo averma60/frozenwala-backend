@@ -89,6 +89,7 @@ from uuid import uuid4  # Import UUID generator
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Order
+from .serializers import GroupedOrderSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Order
@@ -96,6 +97,7 @@ from .serializers import OrderSerializer, PaymentOptionSerializer, DeliverySlotS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Order
+from .serializers import OrderSerializer
 from django.db.models import Max, Q
 from datetime import date
 from rest_framework import serializers
@@ -106,8 +108,8 @@ from django.utils.timezone import now
 india_tz = pytz.timezone("Asia/Kolkata")
 current_time = datetime.now(india_tz)
 
-from django.utils import timezone
-tz = timezone.get_current_timezone()
+from django.utils import timezone as dtz
+from datetime import datetime, timedelta
 
 from pytz import timezone
 from reportlab.platypus import *
@@ -141,11 +143,15 @@ def orderlist(request):
         orders = orders.filter(status=status)
 
     if from_date:
-        from_dt = tz.localize(datetime.strptime(from_date, "%Y-%m-%d"))
+        from_dt = dtz.make_aware(
+            datetime.strptime(from_date, "%Y-%m-%d")
+        )
         orders = orders.filter(created_at__gte=from_dt)
 
     if to_date:
-        to_dt = tz.localize(datetime.strptime(to_date, "%Y-%m-%d")) + timedelta(days=1)
+        to_dt = dtz.make_aware(
+            datetime.strptime(to_date, "%Y-%m-%d")
+        ) + timedelta(days=1)
         orders = orders.filter(created_at__lte=to_dt)
 
     # Create a dictionary to store orders grouped by their order_id
@@ -156,12 +162,18 @@ def orderlist(request):
 
     # Iterate over orders and group them by their order_id
     for order in orders:
-        if order.payment_id:
-            if order.order_id not in orders_dict:
-                orders_dict[order.order_id] = order
+        # if order.payment_id:
+        if order.order_id not in orders_dict:
+            orders_dict[order.order_id] = order
     # Extract the first element of each group
     first_elements = [order for order in orders_dict.values()][:10]
     sec_elements = [order for order in orders_dict.values()]
+    
+    for o in sec_elements:
+        if o.user_id and o.user_id.influencer_records and o.user_id.influencer_records.filter(
+        end_date__gte=now()
+    ).exists():
+            o.influencer_code = o.user_id.referral_code
 
     # Pass the first elements to the template context
     context = {
@@ -288,7 +300,7 @@ def generate_random_order_id():
 def update_status(request, id):
     if not request.user.is_staff:
         return redirect('backend/login')
-
+    
     if request.method == 'POST':
         now = django_timezone.now()
         selected_status_str = request.POST.get('selected_status')
@@ -312,7 +324,7 @@ def update_status(request, id):
         # Update status for each order
         for order_id in orders_to_update:
             order_id.status = selected_status
-            
+
             if selected_status == 2 and not order_id.confirmed_at:
                 order_id.confirmed_at = now
             elif selected_status == 3 and not order_id.picked_up_at:
@@ -369,6 +381,7 @@ def update_status(request, id):
     return redirect(
         reverse('orderapp/view_item', args=[order.order_id])
     )
+
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_SECRET_KEY))
 
@@ -462,7 +475,7 @@ def create_order(request):
                 cgst_amount = round(gst_amount / 2, 2)
                 sgst_amount = round(gst_amount - cgst_amount, 2)
                 total_gst = round(gst_amount, 2)
-            
+
             if delivery_slot:
                 delivery_slot = DeliverySlot.objects.filter(id=delivery_slot).first()
 
@@ -522,42 +535,42 @@ def create_order(request):
                     order.delivery_slot = delivery_slot
                     order.save()
 
-            if order and order.purchase_benefit:
-                user.walet += float(order.purchase_benefit)
-                user.save()
+            # if order and order.purchase_benefit:
+            #     user.walet += float(order.purchase_benefit)
+            #     user.save()
 
-                WalletTransaction.objects.create(
-                    user_id=user_id,
-                    transaction_id=order.order_id,  
-                    credit_bal=order.purchase_benefit,
-                    debit_bal=0,
-                    opening_bal=0,
-                    closing_bal=order.purchase_benefit,
-                    transaction_type="Purchase Benefit",
-                )
+            #     WalletTransaction.objects.create(
+            #         user_id=user_id,
+            #         transaction_id=order.order_id,  
+            #         credit_bal=order.purchase_benefit,
+            #         debit_bal=0,
+            #         opening_bal=0,
+            #         closing_bal=order.purchase_benefit,
+            #         transaction_type="Purchase Benefit",
+            #     )
 
             if order.delivery_slot and delivery_slot:
                 delivery_slot.booked_orders += 1
                 delivery_slot.save()
 
-            if order:
-                order_price = Decimal(str(order.price))
-                reffered_by = CustomUser.objects.filter(referral_code=user.refer_by).first()
-                if reffered_by:
-                    influencer_record = InfluencerRecord.objects.filter(user=reffered_by, end_date__gte=now()).first()
-                    if influencer_record and influencer_record.benefit_percentage:
-                        benefit_amount = (order_price * influencer_record.benefit_percentage) / Decimal('100')
-                        reffered_by.walet += float(benefit_amount)
-                        reffered_by.save()
-                        WalletTransaction.objects.create(
-                            user_id=reffered_by.id,
-                            transaction_id=order.order_id,  
-                            credit_bal=benefit_amount,
-                            debit_bal=0,
-                            opening_bal=0,
-                            closing_bal=benefit_amount,
-                            transaction_type="Influencer Benefit",
-                        )
+            # if order:
+            #     order_price = Decimal(str(order.price))
+            #     reffered_by = CustomUser.objects.filter(referral_code=user.refer_by).first()
+            #     if reffered_by:
+            #         influencer_record = InfluencerRecord.objects.filter(user=reffered_by, end_date__gte=now()).first()
+            #         if influencer_record and influencer_record.benefit_percentage:
+            #             benefit_amount = (order_price * influencer_record.benefit_percentage) / Decimal('100')
+            #             reffered_by.walet += float(benefit_amount)
+            #             reffered_by.save()
+            #             WalletTransaction.objects.create(
+            #                 user_id=reffered_by.id,
+            #                 transaction_id=order.order_id,  
+            #                 credit_bal=benefit_amount,
+            #                 debit_bal=0,
+            #                 opening_bal=0,
+            #                 closing_bal=benefit_amount,
+            #                 transaction_type="Influencer Benefit",
+            #             )
 
             # for cart_item in cart_items:
             #     stock = get_object_or_404(Stock, item_id=cart_item.product_id)
@@ -663,6 +676,41 @@ def verify_payment(request):
 
             alluser = CustomUser.objects.filter(id=user_id)
             userss = alluser.first()
+            
+            if first_order and first_order.purchase_benefit:
+                user = CustomUser.objects.get(id=user_id)
+                user.walet += float(first_order.purchase_benefit)
+                user.save()
+
+                WalletTransaction.objects.create(
+                    user_id=user_id,
+                    transaction_id=first_order.order_id,  
+                    credit_bal=first_order.purchase_benefit,
+                    debit_bal=0,
+                    opening_bal=0,
+                    closing_bal=first_order.purchase_benefit,
+                    transaction_type="Purchase Benefit",
+                )
+            
+            if first_order:
+                user = CustomUser.objects.get(id=user_id)
+                order_price = Decimal(str(first_order.price))
+                reffered_by = CustomUser.objects.filter(referral_code=user.refer_by).first()
+                if reffered_by:
+                    influencer_record = InfluencerRecord.objects.filter(user=reffered_by, end_date__gte=now()).first()
+                    if influencer_record and influencer_record.benefit_percentage:
+                        benefit_amount = (order_price * influencer_record.benefit_percentage) / Decimal('100')
+                        reffered_by.walet += float(benefit_amount)
+                        reffered_by.save()
+                        WalletTransaction.objects.create(
+                            user_id=reffered_by.id,
+                            transaction_id=first_order.order_id,  
+                            credit_bal=benefit_amount,
+                            debit_bal=0,
+                            opening_bal=0,
+                            closing_bal=benefit_amount,
+                            transaction_type="Influencer Benefit",
+                        )
 
             # Get the registration_id of the user
             registration_id = userss.registration_id
@@ -786,9 +834,9 @@ class OrderDetailsAPIView(APIView):
                 # Append full order details for the first order only
                 if not order_details:  # Ensures only the first order details are added
                     order_detail = {
-                        "id": order.id,
+                        "id": order.id+1000,
                         "order_id": order.order_id,
-                        "order_date": order.created_at.strftime("%-m/%-d/%Y"),
+                        "order_date": order.created_at.strftime("%-d/%-m/%Y"),
                         "status": order.status,
                         "total_price": order.total_price,
                         "discounted_price": order.dicounted_price,
@@ -1168,8 +1216,8 @@ class DownloadOrderInvoice(APIView):
             order_data["shop_phone"] = address.phone or "-"
             order_data["shop_gstn"] = address.gstn or "-"
 
-        order_data["invoice_number"] = order.order_id
-        order_data["order_date"] = order.created_at.strftime("%-m/%-d/%Y")
+        order_data["invoice_number"] = order.id+1000
+        order_data["order_date"] = order.created_at.strftime("%-d/%-m/%Y")
         order_data["customer_name"] = order.newname
         order_data["customer_phone"] = order.phone
         order_data["is_pickup"] = True if order.pick_up == "1" else False
@@ -1207,15 +1255,15 @@ class DownloadOrderInvoice(APIView):
 
         order_data["products"] = products
         order_data["total_quantity"] = total_quantity
-        order_data["total_price"] = total_price
-        order_data["coupon_discount"] = coupon_discount
-        order_data["total_saved"] = total_saved
+        order_data["total_price"] = round(total_price, 2)
+        order_data["coupon_discount"] = round(coupon_discount, 2)
+        order_data["total_saved"] = round(total_saved, 2)
         order_data["total_paid"] = order.total_price
         order_data["taxable_amount"] = int(order.total_price) - total_gst_amount
         order_data["cgst"] = round(total_gst_amount / 2, 2)
         order_data["sgst"] = round(total_gst_amount / 2, 2)
-        order_data["total_gst_amount"] = total_gst_amount
-        order_data["wallet_use"] = wallet_use
+        order_data["total_gst_amount"] = round(total_gst_amount, 2)
+        order_data["wallet_use"] = round(wallet_use, 2)
 
         html_string = render_to_string(
             "invoice.html",

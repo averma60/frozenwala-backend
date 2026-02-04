@@ -15,6 +15,9 @@ from django.core.paginator import Paginator
 # from rest_framework.decorators import authentication_classes
 from .models import WalletTransaction
 from django.utils import timezone
+import pytz
+
+ist = pytz.timezone('Asia/Kolkata')
 
 class WalletTransactionAPIView(View):
     permission_classes = [IsAuthenticated]
@@ -38,6 +41,7 @@ class WalletTransactionAPIView(View):
         data_list = []
 
         for t in page_obj:
+            created_at_ist = timezone.localtime(t.created_at, ist) if t.created_at else None
             data_list.append({
                 "id": t.id,
                 "transaction_id": t.transaction_id,
@@ -46,7 +50,7 @@ class WalletTransactionAPIView(View):
                 "debit_bal": float(t.debit_bal),
                 "closing_bal": float(t.closing_bal),
                 "transaction_type": t.transaction_type,
-                "created_at": t.created_at.strftime("%Y-%m-%d %H:%M:%S") if t.created_at else None,
+                "created_at": created_at_ist.strftime("%Y-%m-%d %H:%M:%S") if created_at_ist else None,
                 "wallet_benefit": t.wallet_benefit,
             })
 

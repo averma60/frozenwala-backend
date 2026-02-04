@@ -99,7 +99,7 @@ class MyRefferalsSerializer(serializers.ModelSerializer):
             total_price += item.product_id.item_old_price * item.quantity
         
         first_order = total_orders.first()
-        if first_order.delivery_price:
+        if first_order and first_order.delivery_price:
             total_price += int(first_order.delivery_price)
 
         return total_price

@@ -257,7 +257,7 @@
                     <div class="receipt-contact">GSTIN: <span>{% if order.shop_gstn %}{{order.shop_gstn}}{% else %}-{% endif %}</span></div>
                 </div>
                 <div class="invoice-details">
-                    <div class="invoice-row"><span>Inv No: {% if order.invoice_number %}{{order.invoice_number}}{% else %}-{% endif %}</span><span>Date: {% if order.order_date %}{{order.order_date}}{% else %}-{% endif %}</span></div>
+                    <div class="invoice-row"><span>Inv No: {% if order.invoice_number %}#{{order.invoice_number}}{% else %}-{% endif %}</span><span>Date: {% if order.order_date %}{{order.order_date}}{% else %}-{% endif %}</span></div>
                     {% if order.is_pickup and order.is_pickup == "1" %}
                         <div>Customer Name: {% if order.customer_name %}{{order.customer_name}}{% else %}-{% endif %}</div>
                         <div>Contact No: {% if order.customer_phone %}{{order.customer_phone}}{% else %}-{% endif %}</div>
