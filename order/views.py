@@ -866,6 +866,11 @@ class OrderDetailsAPIView(APIView):
                         "picked_up_at": order.picked_up_at,
                         "delivered_at": order.delivered_at,
                         "cancelled_at": order.cancelled_at,
+                        "delivery_slot": (
+                            f"{order.delivery_slot.start_time.strftime('%I:%M %p')} - "
+                            f"{order.delivery_slot.end_time.strftime('%I:%M %p')}"
+                            if order.delivery_slot else None
+                        ),
 
                         # "order_item_id": order.order_item_id
                     }
@@ -1221,6 +1226,11 @@ class DownloadOrderInvoice(APIView):
         order_data["customer_name"] = order.newname
         order_data["customer_phone"] = order.phone
         order_data["is_pickup"] = True if order.pick_up == "1" else False
+        order_data["delivery_slot"] = (
+                                        f"{order.delivery_slot.start_time.strftime('%I:%M %p')} - "
+                                        f"{order.delivery_slot.end_time.strftime('%I:%M %p')}"
+                                        if order.delivery_slot else None
+                                    )
         
         total_quantity = 0
         total_price = 0

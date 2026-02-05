@@ -264,6 +264,9 @@
                     {% else %}
                     <div>Pick UP</div>
                     {% endif %}
+                    {% if order.delivery_slot %}
+                        <div>Delivery Slot: {{order.delivery_slot}}</div>
+                    {% endif %}
                 </div>
                 <div class="items-table">
                     <div class="table-header">
