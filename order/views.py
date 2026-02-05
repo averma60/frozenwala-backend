@@ -535,6 +535,9 @@ def create_order(request):
                     order.delivery_slot = delivery_slot
                     order.save()
 
+                if payment_option and payment_option.code == 'cod':
+                    update_stock(cart_item.product_id.id, cart_item.quantity)
+
             # if order and order.purchase_benefit:
             #     user.walet += float(order.purchase_benefit)
             #     user.save()
