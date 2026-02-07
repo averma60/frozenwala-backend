@@ -755,7 +755,7 @@ class OrderListAPIView(APIView):
             local_created_at = order['latest_created_at'].astimezone(local_tz)
             order_dict = {
                 'order_id': order['order_id'],
-                'created_at': local_created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                'created_at': local_created_at.strftime("%d-%m-%Y %I:%M:%S %p"),
                 'total_price': order['total_price'],
                 'status': order['status']
             }
