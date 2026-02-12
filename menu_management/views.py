@@ -11,6 +11,8 @@ from .serializers import ItemReviewSerializer
 from rest_framework.permissions import AllowAny
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
+from ecomApp.utils import fetchStocks
+from cart.utils import item_stock_quantity
 
 
 @login_required(login_url='backend/login')
@@ -275,9 +277,44 @@ class DealOfTheDayAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        items = Item.objects.filter(itemhighlights__deals_of_the_day=True, status=True) # , stock__openingstock__gt=0
+        brand_param = request.query_params.get('brand', None)
+
+        menu_setting = MenuSettings.objects.first()
+
+        items = Item.objects.filter(itemhighlights__deals_of_the_day=True, status=True)
+
+        if brand_param:
+            brand_list = [b.strip() for b in brand_param.split(",")]
+            query = Q()
+            for b in brand_list:
+                query |= Q(brand_name__iexact=b)
+            items = items.filter(query)
+
         serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+        serialized_items = serializer.data
+
+        billing_software_items = fetchStocks()
+
+        billing_stock_map = {
+            int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+            for i in billing_software_items
+            if i.get("id")
+        }
+
+        final_items = []
+
+        for item in serialized_items:
+            item_id = item["id"]
+            stock = billing_stock_map.get(item_id, 0)
+
+            item["stock"] = stock
+
+            if stock < 1 and not menu_setting.show_out_of_stock:
+                continue
+
+            final_items.append(item)
+
+        return Response(final_items)
 
 
 class RecommendedAPIView(APIView):
@@ -287,11 +324,9 @@ class RecommendedAPIView(APIView):
         brand_param = request.query_params.get('brand', None)
 
         menu_setting = MenuSettings.objects.first()
-        if menu_setting and menu_setting.show_out_of_stock:
-            items = Item.objects.filter(itemhighlights__recommended=True, status=True) #, stock__openingstock__gt=0
-        else:
-            items = Item.objects.filter(itemhighlights__recommended=True, status=True, stock__openingstock__gt=0)
-        
+
+        items = Item.objects.filter(itemhighlights__recommended=True, status=True)
+
         if brand_param:
             brand_list = [b.strip() for b in brand_param.split(",")]
             query = Q()
@@ -300,15 +335,74 @@ class RecommendedAPIView(APIView):
             items = items.filter(query)
 
         serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+        serialized_items = serializer.data
+
+        billing_software_items = fetchStocks()
+
+        billing_stock_map = {
+            int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+            for i in billing_software_items
+            if i.get("id")
+        }
+
+        final_items = []
+
+        for item in serialized_items:
+            item_id = item["id"]
+            stock = billing_stock_map.get(item_id, 0)
+
+            item["stock"] = stock
+
+            if stock < 1 and not menu_setting.show_out_of_stock:
+                continue
+
+            final_items.append(item)
+
+        return Response(final_items)
 
 class MostPopularAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        items = Item.objects.filter(itemhighlights__popular_item=True, status=True) # , stock__openingstock__gt=0
+        brand_param = request.query_params.get('brand', None)
+
+        menu_setting = MenuSettings.objects.first()
+
+        items = Item.objects.filter(itemhighlights__popular_item=True, status=True)
+
+        if brand_param:
+            brand_list = [b.strip() for b in brand_param.split(",")]
+            query = Q()
+            for b in brand_list:
+                query |= Q(brand_name__iexact=b)
+            items = items.filter(query)
+
         serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
+        serialized_items = serializer.data
+
+        billing_software_items = fetchStocks()
+
+        billing_stock_map = {
+            int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+            for i in billing_software_items
+            if i.get("id")
+        }
+
+        final_items = []
+
+        for item in serialized_items:
+            item_id = item["id"]
+            stock = billing_stock_map.get(item_id, 0)
+
+            item["stock"] = stock
+
+            if stock < 1 and not menu_setting.show_out_of_stock:
+                continue
+
+            final_items.append(item)
+
+        return Response(final_items)
+
 class AllProduct(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -435,6 +529,8 @@ class ProductDetailsAPIView(APIView):
         try:
             item = Item.objects.get(id=product_id, status=True)
             item_data = ItemSerializer(item).data
+            
+            item_data["stock"] = item_stock_quantity(item_data['id'])
             
             old_price = item_data.get("item_old_price", 0)
             new_price = item_data.get("item_new_price", 0)
@@ -758,33 +854,85 @@ class AuthCategoryAPIView(APIView):
         # Get the category ID from the query parameters
         category_id = request.query_params.get('category_id')
 
-        try:
-            # Get all items for the specified category ID
-            items = Item.objects.filter(category__id=category_id)
+        menu_setting = MenuSettings.objects.first()
 
-            # Filter items where status is True using list comprehension
-            items = [item for item in items if item.status]
+        items = Item.objects.filter(category__id=category_id, status=True)
 
-            serializer = ItemSerializer(items, many=True)
-            return Response(serializer.data)
-        except Item.DoesNotExist:
-            return Response({"error": "Category does not exist"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        serializer = ItemSerializer(items, many=True)
+        serialized_items = serializer.data
+
+        billing_software_items = fetchStocks()
+
+        billing_stock_map = {
+            int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+            for i in billing_software_items
+            if i.get("id")
+        }
+
+        final_items = []
+
+        for item in serialized_items:
+            item_id = item["id"]
+            stock = billing_stock_map.get(item_id, 0)
+
+            item["stock"] = stock
+
+            if stock < 1 and not menu_setting.show_out_of_stock:
+                continue
+
+            final_items.append(item)
+
+        return Response(final_items)
+
 
 class AuthAllProduct(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        items = Item.objects.all()
-        items = [item for item in items if item.status]
+        brand_param = request.query_params.get('brand', None)
+
+        menu_setting = MenuSettings.objects.first()
+
+        items = Item.objects.filter(status=True)
+        if brand_param:
+            brand_list = [b.strip() for b in brand_param.split(",")]
+            query = Q()
+            for b in brand_list:
+                query |= Q(brand_name__iexact=b)
+            items = items.filter(query)
+
+        serializer = ItemSerializer(items, many=True)
+        
+        serialized_items = serializer.data
+
+        billing_software_items = fetchStocks()
+
+        billing_stock_map = {
+            int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+            for i in billing_software_items
+            if i.get("id")
+        }
+
+        final_items = []
+
+        for item in serialized_items:
+            item_id = item["id"]
+            stock = billing_stock_map.get(item_id, 0)
+
+            item["stock"] = stock
+
+            if stock < 1 and not menu_setting.show_out_of_stock:
+                continue
+
+            final_items.append(item)
+
         delivery_charge = DeliveryCharge.objects.first()
         if not delivery_charge:
             delivery_charge = 0
         else:
             delivery_charge = delivery_charge.charge
-        serializer = ItemSerializer(items, many=True)
-        data = serializer.data
+
+        data = final_items
         data.append({"DeliveryChange": delivery_charge})
         return Response(data)
 

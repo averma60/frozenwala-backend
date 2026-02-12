@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Cart, Whishlist
 from django.conf import settings
 from menu_management.serializers import ItemSerializer
+from .utils import item_stock_quantity
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,6 +38,7 @@ class CartSerializer(serializers.ModelSerializer):
         representation['totalPrice'] = "{:.2f}".format(instance.price)
         representation['title'] = instance.product_id.title
         representation['product_name'] = instance.product_id.title
+        representation['stock'] = item_stock_quantity(instance.product_id.id)
         return representation
 
 class CartGetSerializer(serializers.ModelSerializer):

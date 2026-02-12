@@ -11,6 +11,7 @@ from walet.models import Walet
 from django.utils.timezone import now
 from ecomApp.models import CustomerCoupon
 from registration.models import AddressAdmin
+from .utils import item_stock_quantity
 
 class AddToCartAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -20,24 +21,7 @@ class AddToCartAPIView(APIView):
             # old code
             product_id = request.data.get('product_id')
             u_id = request.data.get('u_id')
-            try:
-                wallet = Walet.objects.get(user_id=u_id)
-                wallet_value = wallet.wallet_value  # Get the wallet value before deleting
 
-                # Delete the wallet
-                wallet.delete()
-
-                # Add wallet value back to CustomUser's walet
-                # new
-                # user.walet += wallet_value
-                # user.save()
-                pass
-
-                # return Response({"success": "Wallet deleted successfully and amount added back to user's wallet."},
-                #                 status=200)
-
-            except Walet.DoesNotExist:
-                pass
             if product_id or u_id: 
                 product = Item.objects.filter(id=product_id).first()
                 if not product:
@@ -67,13 +51,13 @@ class AddToCartAPIView(APIView):
                     item = Item.objects.filter(id=product['id']).first()
                     if item:
                         cart_item = Cart.objects.filter(product_id=item, u_id=user)
-                        stock = Stock.objects.filter(item_id=item).first()
-                        if cart_item and cart_item.quantity < stock.openingstock:
+                        stock = item_stock_quantity(item.id)
+                        if cart_item and cart_item.quantity < stock:
                             cart_item.quantity = cart_item.quantity + product['qty']
                             cart_item.price = item.item_new_price * cart_item.quantity
                             cart_item.save()
                         elif not cart_item:
-                            if int(product['qty']) < stock.openingstock:
+                            if int(product['qty']) < stock:
                                 price = item.item_new_price * int(product['qty'])
                                 quantity = product['qty']
                             else:
@@ -209,27 +193,11 @@ class IncreaseQuantity(APIView):
 
             # Retrieve the cart item
             cart_item = Cart.objects.get(id=cart_id)
-            try:
-                wallet = Walet.objects.get(user_id=cart_item.u_id.id)
-                wallet_value = wallet.wallet_value  # Get the wallet value before deleting
 
-                # Delete the wallet
-                wallet.delete()
+            stock = item_stock_quantity(cart_item.product_id.id)
 
-                # Add wallet value back to CustomUser's walet
-                # new
-                # user.walet += wallet_value
-                # user.save()
-                pass
-
-                # return Response({"success": "Wallet deleted successfully and amount added back to user's wallet."},
-                #                 status=200)
-
-            except Walet.DoesNotExist:
-                pass
-            stock=Stock.objects.get(item_id=cart_item.product_id)
             # Check if quantity is less than opening stock
-            if cart_item.quantity < stock.openingstock:
+            if cart_item.quantity < stock:
                 # Increment quantity
                 cart_item.quantity += 1
                 cart_item.save()
@@ -241,11 +209,12 @@ class IncreaseQuantity(APIView):
                 return Response({"message": "Quantity increased successfully."}, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "Quantity cannot be increased beyond opening stock."},
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_400_BAD_REQUEST)
         except Cart.DoesNotExist:
             return Response({"error": "Cart item does not exist."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 # class DecreaseQuantity(APIView):
 #     permission_classes = [IsAuthenticated]
 #
@@ -284,25 +253,7 @@ class DecreaseQuantity(APIView):
 
             # Retrieve the cart item
             cart_item = Cart.objects.get(id=cart_id)
-            try:
-                wallet = Walet.objects.get(user_id=cart_item.u_id.id)
-                wallet_value = wallet.wallet_value  # Get the wallet value before deleting
 
-                # Delete the wallet
-                wallet.delete()
-
-                # Add wallet value back to CustomUser's walet
-                # new
-                # user.walet += wallet_value
-                # user.save()
-                pass
-
-                # return Response({"success": "Wallet deleted successfully and amount added back to user's wallet."},
-                #                 status=200)
-
-            except Walet.DoesNotExist:
-                pass
-                # Ensure quantity is greater than 1 before decrementing
             if cart_item.quantity > 1:
                 # Decrement quantity
                 cart_item.quantity -= 1
@@ -588,29 +539,11 @@ class IncreaseQuantityMain(APIView):
 
             # Retrieve the cart item
             cart_item = Cart.objects.get(product_id=product_id, u_id=user_id)
-            try:
-                wallet = Walet.objects.get(user_id=cart_item.u_id.id)
-                wallet_value = wallet.wallet_value  # Get the wallet value before deleting
 
-                # Delete the wallet
-                wallet.delete()
-
-                # Add wallet value back to CustomUser's walet
-                # new
-                # user.walet += wallet_value
-                # user.save()
-                pass
-
-                # return Response({"success": "Wallet deleted successfully and amount added back to user's wallet."},
-                #                 status=200)
-
-            except Walet.DoesNotExist:
-                pass
-            
-            stock = Stock.objects.get(item_id=product_id)
+            stock = item_stock_quantity(product_id)
 
             # Check if quantity is less than opening stock
-            if cart_item.quantity < stock.openingstock:
+            if cart_item.quantity < stock:
                 # Increment quantity
                 cart_item.quantity += 1
                 cart_item.save()
@@ -631,9 +564,6 @@ class IncreaseQuantityMain(APIView):
             cart_items = Cart.objects.filter(u_id=user)
             serializer = CartSerializer(cart_items, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Stock.DoesNotExist:
-            return Response({"error": "Stock information not available for the product."},
-                            status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 # class DecreaseQuantityMain(APIView):
@@ -713,24 +643,7 @@ class DecreaseQuantityMain(APIView):
 
             # Retrieve the cart item
             cart_item = Cart.objects.get(product_id=product_id, u_id=user_id)
-            try:
-                wallet = Walet.objects.get(user_id=cart_item.u_id.id)
-                wallet_value = wallet.wallet_value  # Get the wallet value before deleting
 
-                # Delete the wallet
-                wallet.delete()
-
-                # Add wallet value back to CustomUser's walet
-                # new
-                # user.walet += wallet_value
-                # user.save()
-                pass
-
-                # return Response({"success": "Wallet deleted successfully and amount added back to user's wallet."},
-                #                 status=200)
-
-            except Walet.DoesNotExist:
-                pass
             # Ensure quantity is greater than 1 before decrementing
             if cart_item.quantity > 1:
                 # Decrement quantity
