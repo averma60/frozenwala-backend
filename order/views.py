@@ -117,7 +117,7 @@ from django.http import HttpResponse, JsonResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.enums import TA_CENTER
 
-from .utils import update_stock
+from .utils import update_stock, sale_sync
 
 #for noww...
 class OrderView(APIView):
@@ -479,6 +479,8 @@ def create_order(request):
             if delivery_slot:
                 delivery_slot = DeliverySlot.objects.filter(id=delivery_slot).first()
 
+            order_items = []
+
             # Create orders for each item in the cart
             for cart_item in cart_items:
                 order = Order.objects.create(
@@ -537,6 +539,19 @@ def create_order(request):
 
                 if payment_option and payment_option.code == 'cod':
                     update_stock(cart_item.product_id.id, cart_item.quantity)
+
+                order_items.append({
+                    "item_id": cart_item.product_id.id,
+                    "quantity": cart_item.quantity,
+                    "price_per_unit": cart_item.product_id.item_new_price,
+                    "total_cost": cart_item.product_id.item_new_price*cart_item.quantity,
+                    "purchase_price": cart_item.product_id.item_new_price,
+                    "tax_id": 0,
+                    "tax_amt": 0
+                })
+
+            if order and len(order_items) > 0:
+                sale_sync(order, user_id, order_items)
 
             # if order and order.purchase_benefit:
             #     user.walet += float(order.purchase_benefit)
@@ -617,6 +632,8 @@ def verify_payment(request):
             # Update order status or save payment details to your database
             orders = Order.objects.filter(order_id=razorpay_order_id)
 
+            order_items = []
+
             for order in orders:
                 # Generate a unique order item ID
                 order_item_id = str(uuid4())
@@ -637,6 +654,16 @@ def verify_payment(request):
                 # stock.openingstock -= quantity
                 # stock.save()
                 update_stock(product_id.id, quantity)
+
+                order_items.append({
+                    "item_id": product_id.id,
+                    "quantity": quantity,
+                    "price_per_unit": product_id.item_new_price,
+                    "total_cost": product_id.item_new_price*quantity,
+                    "purchase_price": product_id.item_new_price,
+                    "tax_id": 0,
+                    "tax_amt": 0
+                })
 
             first_order = orders.first()
             user_id = first_order.user_id.id
@@ -714,6 +741,9 @@ def verify_payment(request):
                             closing_bal=benefit_amount,
                             transaction_type="Influencer Benefit",
                         )
+
+            if first_order and len(order_items) > 0:
+                sale_sync(first_order, user_id, order_items)
 
             # Get the registration_id of the user
             registration_id = userss.registration_id
