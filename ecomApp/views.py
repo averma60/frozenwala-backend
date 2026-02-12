@@ -24,6 +24,8 @@ from order.models import PaymentOption, DeliverySlot
 from walet.models import WalletBenefit, WalletTransaction
 from django.db.models.functions import Coalesce
 
+from .utils import fetchStocks
+
 
 @login_required(login_url='backend/login')
 def dashboard(request):
@@ -850,18 +852,20 @@ def update_charge(request, myid):
     productapp.save()
 
     return redirect('chargeapp')
+
 @login_required(login_url='backend/login')
 def stock(request):
     if not request.user.is_staff:
         return redirect('backend/login')
-    catagoryapp=Stock.objects.all()
 
-    context={
-        'banform': catagoryapp
+    stocks = fetchStocks()
 
+    context = {
+        'stocks': stocks
     }
 
-    return render(request,'backend/inventory_list.html',context)
+    return render(request,'backend/inventory_list.html', context)
+
 @login_required(login_url='backend/login')
 def edit_stock(request, myid):
     if not request.user.is_staff:
