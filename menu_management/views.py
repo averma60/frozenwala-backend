@@ -676,6 +676,8 @@ class SearchProductAPIView(APIView):
             )
 
         try:
+            menu_setting = MenuSettings.objects.first()
+
             # Perform case-insensitive partial search
             items = Item.objects.filter(title__icontains=q, status=True)
 
@@ -689,10 +691,33 @@ class SearchProductAPIView(APIView):
             paginated_items = paginator.paginate_queryset(items, request)
             serializer = ItemSerializer(paginated_items, many=True)
 
+            serialized_items = serializer.data
+
+            billing_software_items = fetchStocks()
+
+            billing_stock_map = {
+                int(float(i.get("id", 0))): int(float(i.get("available_qty", 0)))
+                for i in billing_software_items
+                if i.get("id")
+            }
+
+            final_items = []
+
+            for item in serialized_items:
+                item_id = item["id"]
+                stock = billing_stock_map.get(item_id, 0)
+
+                item["stock"] = stock
+
+                if stock < 1 and not menu_setting.show_out_of_stock:
+                    continue
+
+                final_items.append(item)
+
             # Return structured response
             response_data = {
                 "total": items.count(),
-                "results": serializer.data
+                "results": final_items
             }
 
             return Response(response_data, status=status.HTTP_200_OK)
