@@ -550,7 +550,7 @@ def create_order(request):
                     "tax_amt": 0
                 })
 
-            if order and len(order_items) > 0:
+            if order and len(order_items) > 0 and payment_option and payment_option.code == 'cod':
                 sale_sync(order, user_id, order_items)
 
             # if order and order.purchase_benefit:
@@ -595,7 +595,8 @@ def create_order(request):
             #     stock.openingstock -= cart_item.quantity
             #     stock.save()
 
-            cart_items.delete()
+            if payment_option and payment_option.code == 'cod':
+                cart_items.delete()
 
             if walet_value:
                 user = CustomUser.objects.get(id=user_id)
@@ -765,15 +766,18 @@ class OrderListAPIView(APIView):
         user_id = request.query_params.get('user_id')
 
         # Fetch all orders for the given user where payment_id is not null
-        orders = Order.objects.filter(user_id=user_id)
+        orders = Order.objects.filter(user_id=user_id).exclude(
+            Q(payment_option__code='online') & 
+            (Q(payment_id__isnull=True) | Q(payment_id=''))
+        )
 
         # Group orders by order_id, keeping the latest order with the highest created_at timestamp
-        unique_orders = orders.values('order_id').annotate(
+        unique_orders = (orders.values('order_id').annotate(
             latest_created_at=Max('created_at'),
             total_price=Max('total_price'),
             status=Max('status'),
             payment_id=Max('payment_id')
-        )
+        ).order_by('-created_at'))
 
         # Construct list of dictionaries for each unique order
         order_list = []
@@ -792,9 +796,9 @@ class OrderListAPIView(APIView):
             order_list.append(order_dict)
 
         # Sort the order list in descending order based on created_at
-        sorted_order_list = sorted(order_list, key=lambda x: x['created_at'], reverse=True)
+        # sorted_order_list = sorted(order_list, key=lambda x: x['created_at'], reverse=True)
 
-        return Response(sorted_order_list)
+        return Response(order_list)
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -1382,6 +1386,8 @@ def verify_qr_order(request):
 
         order = None
 
+        ordered_items = []
+
         for prod in products:
             product = Item.objects.filter(id=prod['id']).first()
             if not product:
@@ -1421,9 +1427,23 @@ def verify_qr_order(request):
             # stock.openingstock -= prod['qty']
             # stock.save()
             update_stock(prod['id'], prod['qty'])
+            
+            ordered_items.append(
+                {
+                    "item_id": product.id,
+                    "quantity": prod['qty'],
+                    "price_per_unit": product.item_new_price,
+                    "total_cost": product.item_new_price*prod['qty'],
+                    "purchase_price": product.item_new_price,
+                    "tax_id": 0,
+                    "tax_amt": 0
+                }
+            )
 
         if not order:
             return JsonResponse({'error': 'No valid products found to create order'}, status=400)
+
+        sale_sync(order, 0, ordered_items)
 
         order_data = {
             "order_id": order.order_id,
