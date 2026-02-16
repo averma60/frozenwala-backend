@@ -1,12 +1,11 @@
 from django.db import models
-# from ecomApp.models import Catagory
-# from ecomApp.models import CustomUser
+from ckeditor.fields import RichTextField
 
 
 class Item(models.Model):
     id = models.AutoField(primary_key=True)
     title=models.CharField(max_length=500)
-    description=models.CharField(max_length=1000)
+    description = RichTextField()
     item_photo = models.ImageField(upload_to='item_photos/')
     # item_quantity = models.PositiveIntegerField()
     # item_measurement=models.CharField(max_length=10, default='')
