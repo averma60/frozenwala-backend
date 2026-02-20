@@ -549,7 +549,7 @@ def create_order(request):
                     "price_per_unit": cart_item.product_id.item_new_price,
                     "total_cost": cart_item.product_id.item_new_price*cart_item.quantity,
                     "purchase_price": cart_item.product_id.item_new_price,
-                    "tax_id": 0,
+                    "tax_id": 4,
                     "tax_amt": 0
                 })
 
@@ -665,7 +665,7 @@ def verify_payment(request):
                     "price_per_unit": product_id.item_new_price,
                     "total_cost": product_id.item_new_price*quantity,
                     "purchase_price": product_id.item_new_price,
-                    "tax_id": 0,
+                    "tax_id": 4,
                     "tax_amt": 0
                 })
 
@@ -1438,7 +1438,7 @@ def verify_qr_order(request):
                     "price_per_unit": product.item_new_price,
                     "total_cost": product.item_new_price*prod['qty'],
                     "purchase_price": product.item_new_price,
-                    "tax_id": 0,
+                    "tax_id": 4,
                     "tax_amt": 0
                 }
             )

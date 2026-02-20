@@ -43,7 +43,7 @@ def sale_sync(order, user_id, items):
 
         payload = {
             "order_id": order.id + 1000,
-            "store_id": 1,
+            "store_id": 2,
             "warehouse_id": 2,
             "customer_id": user_id,
             "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
@@ -51,6 +51,8 @@ def sale_sync(order, user_id, items):
             "sales_status": "Completed" if order.status == "4" else "Pending",
             "subtotal": order.total_price,
             "grand_total": order.total_price,
+            "paid_amount": order.total_price,
+            "delivery_charge": order.delivery_price,
             "items": items
         }
 
