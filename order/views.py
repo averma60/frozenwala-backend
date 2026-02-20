@@ -331,12 +331,15 @@ def update_status(request, id):
                 order_id.picked_up_at = now
             elif selected_status == 4 and not order_id.delivered_at:
                 order_id.delivered_at = now
-                order_id.delivery_slot -= 1
-                order_id.delivery_slot.save()
+                if order_id.delivery_slot and order_id.delivery_slot.booked_orders > 0:
+                    order_id.delivery_slot.booked_orders -= 1
+                    order_id.delivery_slot.save()
             elif selected_status == 5 and cancel_reason:
                 order_id.cancelled_at = now
                 order_id.cancellation_reason = cancel_reason
-                order_id.delivery_slot -= 1
+                if order_id.delivery_slot and order_id.delivery_slot.booked_orders > 0:
+                    order_id.delivery_slot.booked_orders -= 1
+                    order_id.delivery_slot.save()
                 order_id.delivery_slot.save()
 
             order_id.save()

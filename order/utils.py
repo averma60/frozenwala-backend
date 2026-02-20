@@ -23,7 +23,7 @@ def update_stock(item_id, quantity):
         response = requests.post(url, json=payload, headers=headers)
 
         logger.info(
-            f"Stock Updated | Item: {item_id} | Qty: {quantity} | Status: {response.status_code}"
+            f"Stock Updated | Item: {item_id} | Qty: {quantity} | Status: {response.status_code} | Response: {response.text}"
         )
 
         return response.status_code, response.text
@@ -47,7 +47,7 @@ def sale_sync(order, user_id, items):
             "warehouse_id": 2,
             "customer_id": user_id,
             "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "payment_status": "PAID" if order.payment_id else "UNPAID",
+            "payment_status": "PAID",
             "sales_status": "Completed" if order.status == "4" else "Pending",
             "subtotal": order.total_price,
             "grand_total": order.total_price,
@@ -58,7 +58,7 @@ def sale_sync(order, user_id, items):
 
         logger.info(
             f"Sale Sync | Order: #{order.id + 1000} | User: {user_id} | "
-            f"Status: {response.status_code}"
+            f"Status: {response.status_code} | Response: {response.text}"
         )
         return response.status_code, response.text
     except Exception as e:
